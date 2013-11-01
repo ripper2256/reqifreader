@@ -111,23 +111,16 @@ void DomParser::parseCoreContent(const QDomNode &element){
             parseSpecTypes(child.toElement());
         }
         if (child.toElement().tagName() == "SPEC-OBJECTS"){
-            QTime myTimer;
-            myTimer.start();
             parseSpecObjects(child.toElement());
-            qDebug() << "obj";
-            qDebug() << myTimer.elapsed();
         }
         if (child.toElement().tagName() == "DATATYPES"){
             parseDatatypes(child.toElement());
         }
         if (child.toElement().tagName() == "SPECIFICATIONS"){
-
             HTMLDelegate* delegate = new HTMLDelegate();
             treeWidget->setItemDelegate(delegate);
             treeWidget->header()->setSectionsMovable(true);
             parseSpecifications(child.toElement().firstChild(), treeWidget->invisibleRootItem());
-            qDebug() << "spec";
-            qDebug() << myTimer.elapsed();
         }
         child = child.nextSibling();
     }
