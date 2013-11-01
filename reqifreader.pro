@@ -6,14 +6,17 @@ HEADERS       = domparser.h \
     specobject.h \
     mainwindow.h \
     infodialog.h \
-    htmldelegate.h
+    htmldelegate.h \
+    searchdialog.h
 SOURCES       = domparser.cpp \
                 main.cpp \
     specobject.cpp \
     mainwindow.cpp \
     infodialog.cpp \
-    htmldelegate.cpp
+    htmldelegate.cpp \
+    searchdialog.cpp
 
 FORMS += \
     mainwindow.ui \
-    infodialog.ui
+    infodialog.ui \
+    searchdialog.ui

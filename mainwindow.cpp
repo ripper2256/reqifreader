@@ -18,6 +18,7 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 #include "infodialog.h"
+#include "searchdialog.h"
 #include <QFileDialog>
 #include <QMessageBox>
 #include <QDebug>
@@ -28,6 +29,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
     connect(ui->actionAbout, SIGNAL(triggered()), this, SLOT(about()));
     connect(ui->actionOpen, SIGNAL(triggered()), this, SLOT(open()));
     connect(ui->actionInfo, SIGNAL(triggered()), this, SLOT(info()));
+    connect(ui->actionSearch, SIGNAL(triggered()), this, SLOT(search()));
 }
 
 MainWindow::~MainWindow(){
@@ -63,6 +65,12 @@ void MainWindow::info(){
         InfoDialog dialog(this, parser->getTitle(), parser->getreqIfSourceTool(), parser->getCreationTime());
         dialog.exec();
     }
+}
+
+void MainWindow::search(){
+    SearchDialog dialog(this);
+    dialog.exec();
+
 }
 
 void MainWindow::about(){

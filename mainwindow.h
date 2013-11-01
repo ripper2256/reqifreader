@@ -37,6 +37,7 @@ private slots:
     void open();
     void about();
     void info();
+    void search();
 
 private:
     Ui::MainWindow *ui;
