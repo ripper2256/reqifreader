@@ -68,7 +68,7 @@ void MainWindow::info(){
 }
 
 void MainWindow::search(){
-    SearchDialog dialog(this);
+    SearchDialog dialog(this, ui->treeWidget);
     dialog.exec();
 
 }
