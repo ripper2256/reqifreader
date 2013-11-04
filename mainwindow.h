@@ -20,6 +20,7 @@
 
 #include <QMainWindow>
 #include "domparser.h"
+#include "searchdialog.h"
 
 namespace Ui {
 class MainWindow;
@@ -42,6 +43,7 @@ private slots:
 private:
     Ui::MainWindow *ui;
     DomParser *parser = NULL;
+    SearchDialog *searchDialog = NULL;
 };
 
 #endif // MAINWINDOW_H

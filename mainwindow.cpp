@@ -18,7 +18,6 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 #include "infodialog.h"
-#include "searchdialog.h"
 #include <QFileDialog>
 #include <QMessageBox>
 #include <QDebug>
@@ -52,9 +51,12 @@ void MainWindow::open(){
         }
 
         parser = new DomParser(ui->treeWidget);
-        parser->readFile(file);
-        QFileInfo fileInfo(file.fileName());
-        setWindowTitle(fileInfo.fileName() +tr(" - ReqIF Reader"));
+        if(parser->readFile(file)){
+            QFileInfo fileInfo(file.fileName());
+            setWindowTitle(fileInfo.fileName() +tr(" - ReqIF Reader"));
+        } else {
+
+        }
 
     }
 }
@@ -68,9 +70,12 @@ void MainWindow::info(){
 }
 
 void MainWindow::search(){
-    SearchDialog dialog(this, ui->treeWidget);
-    dialog.exec();
-
+    if (!searchDialog) {
+         searchDialog = new SearchDialog(this, ui->treeWidget);
+     }
+     searchDialog->show();
+     searchDialog->raise();
+     searchDialog->activateWindow();
 }
 
 void MainWindow::about(){

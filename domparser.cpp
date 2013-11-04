@@ -47,16 +47,12 @@ bool DomParser::readFile(QFile &file){
 
 
     if (!doc.setContent(&file, false, &errorStr, &errorLine, &errorColumn)) {
-        /*std::cerr << "Error: Parse error at line " << errorLine << ", "
-                  << "column " << errorColumn << ": "
-                  << qPrintable(errorStr) << std::endl;*/
         return false;
     }
 
     QDomElement root = doc.documentElement();
 
     if (root.tagName() != "REQ-IF") {
-        //std::cerr << "Error: Not a ReqIF file" << std::endl;
         return false;
     }
     QFileInfo fileInfo(file.fileName());
