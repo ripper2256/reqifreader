@@ -39,11 +39,14 @@ private slots:
     void about();
     void info();
     void search();
+    void switchView();
 
 private:
     Ui::MainWindow *ui;
     DomParser *parser = NULL;
     SearchDialog *searchDialog = NULL;
+    bool listView;
+    QString fileName;
 };
 
 #endif // MAINWINDOW_H

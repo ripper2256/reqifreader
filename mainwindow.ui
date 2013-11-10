@@ -43,7 +43,7 @@
      <x>0</x>
      <y>0</y>
      <width>585</width>
-     <height>26</height>
+     <height>21</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
@@ -66,6 +66,7 @@
     </property>
     <addaction name="actionInfo"/>
     <addaction name="actionSearch"/>
+    <addaction name="actionList_View"/>
    </widget>
    <addaction name="menuFile"/>
    <addaction name="menuView"/>
@@ -112,6 +113,14 @@
   <action name="actionTest">
    <property name="text">
     <string>Test</string>
+   </property>
+  </action>
+  <action name="actionList_View">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>List View</string>
    </property>
   </action>
  </widget>

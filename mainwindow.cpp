@@ -29,13 +29,15 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
     connect(ui->actionOpen, SIGNAL(triggered()), this, SLOT(open()));
     connect(ui->actionInfo, SIGNAL(triggered()), this, SLOT(info()));
     connect(ui->actionSearch, SIGNAL(triggered()), this, SLOT(search()));
+    connect(ui->actionList_View, SIGNAL(triggered()), this, SLOT(switchView()));
+    listView = false;
 }
 
 MainWindow::~MainWindow(){
     delete ui;
 }
 void MainWindow::open(){
-    QString fileName = QFileDialog::getOpenFileName(this,
+    fileName = QFileDialog::getOpenFileName(this,
                                    tr("Open ReqIF File"), ".",
                                    tr("ReqIf files (*.reqif *.xml)"));
     if (!fileName.isEmpty()){
@@ -50,7 +52,7 @@ void MainWindow::open(){
             parser->clear();
         }
 
-        parser = new DomParser(ui->treeWidget);
+        parser = new DomParser(ui->treeWidget, listView);
         if(parser->readFile(file)){
             QFileInfo fileInfo(file.fileName());
             setWindowTitle(fileInfo.fileName() +tr(" - ReqIF Reader"));
@@ -66,6 +68,32 @@ void MainWindow::info(){
     if(parser != NULL){
         InfoDialog dialog(this, parser->getTitle(), parser->getreqIfSourceTool(), parser->getCreationTime());
         dialog.exec();
+    }
+}
+
+void MainWindow::switchView(){
+    listView = !listView;
+    if (!fileName.isEmpty()){
+        QFile file(fileName);
+        if (!file.open(QFile::ReadOnly | QFile::Text)) {
+            /*std::cerr << "Error: Cannot read file " << qPrintable(fileName)
+                      << ": " << qPrintable(file.errorString())
+                      << std::endl;*/
+        }
+
+        if(parser != NULL){
+            parser->clear();
+        }
+
+        parser = new DomParser(ui->treeWidget, listView);
+        parser->setListView(listView);
+        if(parser->readFile(file)){
+            QFileInfo fileInfo(file.fileName());
+            setWindowTitle(fileInfo.fileName() +tr(" - ReqIF Reader"));
+        } else {
+
+        }
+
     }
 }
 

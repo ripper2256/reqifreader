@@ -23,8 +23,9 @@
 #include "domparser.h"
 #include "htmldelegate.h"
 
-DomParser::DomParser(QTreeWidget *tree){
+DomParser::DomParser(QTreeWidget *tree, bool viewAsList){
     treeWidget = tree;
+    listView = viewAsList;
 }
 
 DomParser::~DomParser(){
@@ -125,6 +126,8 @@ void DomParser::parseCoreContent(const QDomNode &element){
 void DomParser::parseSpecifications(const QDomNode &element, QTreeWidgetItem *parent){
     QDomNode child = element.firstChildElement("CHILDREN").firstChild();
      while (!child.isNull()) {
+         if(listView)
+             parent = treeWidget->invisibleRootItem();
          QTreeWidgetItem *item = new QTreeWidgetItem(parent);
          QString specObjectID = child.firstChildElement("OBJECT").firstChild().toElement().text();
          SpecObject specObject = specObjectList.value(specObjectID);
@@ -279,4 +282,7 @@ QString DomParser::getReqIfVersion(){
     return reqifVersion;
 }
 
+void DomParser::setListView(bool viewAsList){
+    listView = viewAsList;
+}
 

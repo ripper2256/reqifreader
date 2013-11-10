@@ -28,7 +28,7 @@ class QFile;
 class DomParser
 {
 public:
-    DomParser(QTreeWidget *tree);
+    DomParser(QTreeWidget *tree, bool viewAsList);
     ~DomParser();
     bool readFile(QFile &file);
     void clear();
@@ -37,6 +37,7 @@ public:
     QString getReqIfTool();
     QString getReqIfVersion();
     QString getreqIfSourceTool();
+    void setListView(bool viewAsList);
 
 
 private:
@@ -62,7 +63,7 @@ private:
     QString reqIfTool;
     QString reqifVersion;
     QString reqifSourceTool;
-
+    bool listView;
 };
 
 #endif
