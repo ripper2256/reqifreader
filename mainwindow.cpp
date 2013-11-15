@@ -30,6 +30,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
     connect(ui->actionInfo, SIGNAL(triggered()), this, SLOT(info()));
     connect(ui->actionSearch, SIGNAL(triggered()), this, SLOT(search()));
     connect(ui->actionList_View, SIGNAL(triggered()), this, SLOT(switchView()));
+    connect(ui->actionMerge, SIGNAL(triggered()), this, SLOT(switchMerge()));
     listView = false;
 }
 
@@ -52,7 +53,7 @@ void MainWindow::open(){
             parser->clear();
         }
 
-        parser = new DomParser(ui->treeWidget, listView);
+        parser = new DomParser(ui->treeWidget, listView, mergeTextAndChapter);
         if(parser->readFile(file)){
             QFileInfo fileInfo(file.fileName());
             setWindowTitle(fileInfo.fileName() +tr(" - ReqIF Reader"));
@@ -85,8 +86,34 @@ void MainWindow::switchView(){
             parser->clear();
         }
 
-        parser = new DomParser(ui->treeWidget, listView);
+        parser = new DomParser(ui->treeWidget, listView, mergeTextAndChapter);
         parser->setListView(listView);
+        if(parser->readFile(file)){
+            QFileInfo fileInfo(file.fileName());
+            setWindowTitle(fileInfo.fileName() +tr(" - ReqIF Reader"));
+        } else {
+
+        }
+
+    }
+}
+
+void MainWindow::switchMerge(){
+    mergeTextAndChapter = !mergeTextAndChapter;
+    if (!fileName.isEmpty()){
+        QFile file(fileName);
+        if (!file.open(QFile::ReadOnly | QFile::Text)) {
+            /*std::cerr << "Error: Cannot read file " << qPrintable(fileName)
+                      << ": " << qPrintable(file.errorString())
+                      << std::endl;*/
+        }
+
+        if(parser != NULL){
+            parser->clear();
+        }
+
+        parser = new DomParser(ui->treeWidget, listView, mergeTextAndChapter);
+        parser->setMerge(mergeTextAndChapter);
         if(parser->readFile(file)){
             QFileInfo fileInfo(file.fileName());
             setWindowTitle(fileInfo.fileName() +tr(" - ReqIF Reader"));

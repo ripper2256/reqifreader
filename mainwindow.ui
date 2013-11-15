@@ -43,7 +43,7 @@
      <x>0</x>
      <y>0</y>
      <width>585</width>
-     <height>21</height>
+     <height>26</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
@@ -67,6 +67,7 @@
     <addaction name="actionInfo"/>
     <addaction name="actionSearch"/>
     <addaction name="actionList_View"/>
+    <addaction name="actionMerge"/>
    </widget>
    <addaction name="menuFile"/>
    <addaction name="menuView"/>
@@ -121,6 +122,17 @@
    </property>
    <property name="text">
     <string>List View</string>
+   </property>
+  </action>
+  <action name="actionMerge">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="checked">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Merge Chapter Name &amp;&amp; Text</string>
    </property>
   </action>
  </widget>

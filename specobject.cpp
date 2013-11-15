@@ -40,4 +40,12 @@ QString SpecObject::getAttributValue(const QString &attrID){
     return attributeValues.value(attrID);
 }
 
+void SpecObject::mergeTextAndHeading(const QString &txtID, const QString &headingID){
+    QString txt = attributeValues.value(txtID);
+    QString heading = attributeValues.value(headingID);
+    heading = "<h2>"+heading+"</h2>";
+    heading.append(txt);
+    attributeValues.insert(txtID, heading);
+}
+
 

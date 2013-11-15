@@ -40,12 +40,14 @@ private slots:
     void info();
     void search();
     void switchView();
+    void switchMerge();
 
 private:
     Ui::MainWindow *ui;
     DomParser *parser = NULL;
     SearchDialog *searchDialog = NULL;
     bool listView;
+    bool mergeTextAndChapter = true;
     QString fileName;
 };
 

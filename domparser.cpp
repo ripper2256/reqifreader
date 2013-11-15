@@ -23,9 +23,10 @@
 #include "domparser.h"
 #include "htmldelegate.h"
 
-DomParser::DomParser(QTreeWidget *tree, bool viewAsList){
+DomParser::DomParser(QTreeWidget *tree, bool viewAsList, bool mergeTextAndChapter){
     treeWidget = tree;
     listView = viewAsList;
+    mergeTextAndChapterName = mergeTextAndChapter;
 }
 
 DomParser::~DomParser(){
@@ -132,6 +133,10 @@ void DomParser::parseSpecifications(const QDomNode &element, QTreeWidgetItem *pa
          QString specObjectID = child.firstChildElement("OBJECT").firstChild().toElement().text();
          SpecObject specObject = specObjectList.value(specObjectID);
 
+         if(mergeTextAndChapterName){
+            specObject.mergeTextAndHeading(textAttribut, headingAttribut);
+         }
+
          QHash<QString, int>::iterator i;
          for (i = specAttributes.begin(); i != specAttributes.end(); ++i){
 
@@ -178,7 +183,14 @@ void DomParser::parseSpecTypes(const QDomNode &element){
             QDomNode attrDefElement = child.firstChild().firstChild();
             while (!attrDefElement.isNull()) {
                 specAttributes.insert(attrDefElement.toElement().attribute("IDENTIFIER"), specAttributes.size());
-                labels << attrDefElement.toElement().attribute("LONG-NAME");
+                QString longName = attrDefElement.toElement().attribute("LONG-NAME");
+                labels << longName;
+                if(longName == REQIF_TEXT){
+                    textAttribut = attrDefElement.toElement().attribute("IDENTIFIER");
+                }
+                if(longName == REQIF_CHAPTER_NAME){
+                    headingAttribut = attrDefElement.toElement().attribute("IDENTIFIER");
+                }
                 attrDefElement = attrDefElement.nextSibling();
             }
             //qDebug() << child.firstChild().firstChild().toElement().attribute("LONG-NAME");
@@ -186,6 +198,14 @@ void DomParser::parseSpecTypes(const QDomNode &element){
         child = child.nextSibling();
     }
     treeWidget->setHeaderLabels(labels);
+
+    if(mergeTextAndChapterName && labels.contains(REQIF_TEXT) && labels.contains(REQIF_CHAPTER_NAME)){
+        treeWidget->header()->hideSection(specAttributes.value(headingAttribut));
+    } else {
+        headingAttribut.clear();
+        textAttribut.clear();
+    }
+
 }
 
 void DomParser::parseSpecObjects(const QDomNode &element){
@@ -284,5 +304,9 @@ QString DomParser::getReqIfVersion(){
 
 void DomParser::setListView(bool viewAsList){
     listView = viewAsList;
+}
+
+void DomParser::setMerge(bool mergeTextAndChapter){
+    mergeTextAndChapterName = mergeTextAndChapter;
 }
 

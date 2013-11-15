@@ -13,6 +13,7 @@ public:
     QString getReqifID();
     void addAttributValue(const QString &attrID, const QString &value);
     QString getAttributValue(const QString &attrID);
+    void mergeTextAndHeading(const QString &txtID, const QString &headingID);
 
 private:
     QString identifier;

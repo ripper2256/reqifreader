@@ -28,7 +28,7 @@ class QFile;
 class DomParser
 {
 public:
-    DomParser(QTreeWidget *tree, bool viewAsList);
+    DomParser(QTreeWidget *tree, bool viewAsList, bool mergeTextAndChapter);
     ~DomParser();
     bool readFile(QFile &file);
     void clear();
@@ -38,7 +38,7 @@ public:
     QString getReqIfVersion();
     QString getreqIfSourceTool();
     void setListView(bool viewAsList);
-
+    void setMerge(bool mergeTextAndChapter);
 
 private:
     void parseReqIfXmlFile(const QDomElement &element);
@@ -63,7 +63,12 @@ private:
     QString reqIfTool;
     QString reqifVersion;
     QString reqifSourceTool;
+    QString headingAttribut;
+    QString textAttribut;
+    const QString REQIF_TEXT = "ReqIF.Text";
+    const QString REQIF_CHAPTER_NAME = "ReqIF.ChapterName";
     bool listView;
+    bool mergeTextAndChapterName;
 };
 
 #endif
