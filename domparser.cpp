@@ -127,6 +127,7 @@ void DomParser::parseCoreContent(const QDomNode &element){
 void DomParser::parseSpecifications(const QDomNode &element, QTreeWidgetItem *parent){
     QDomNode child = element.firstChildElement("CHILDREN").firstChild();
      while (!child.isNull()) {
+         bool tableInternal = false;
          if(listView)
              parent = treeWidget->invisibleRootItem();
          QTreeWidgetItem *item = new QTreeWidgetItem(parent);
@@ -154,7 +155,13 @@ void DomParser::parseSpecifications(const QDomNode &element, QTreeWidgetItem *pa
              item->setText(i.value(), specObject.getAttributValue(i.key()));
          }
 
-         parseSpecifications(child, item);
+         if(child.toElement().hasAttribute("IS-TABLE-INTERNAL")){
+             if(child.toElement().attribute("IS-TABLE-INTERNAL") == "true")
+                 tableInternal = true;
+         }
+
+         if(!tableInternal)
+            parseSpecifications(child, item);
          child = child.nextSibling();
      }
 }
