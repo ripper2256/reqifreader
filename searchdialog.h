@@ -43,6 +43,7 @@ private:
     QTreeWidget *treeWidget;
     int currentPosition;
     QList <QTreeWidgetItem *> searchResults;
+    void setEnableButtons(bool enabled);
 };
 
 #endif // SEARCHDIALOG_H

@@ -28,7 +28,6 @@ InfoDialog::InfoDialog(QWidget *parent, const QString &title, const QString &sou
     connect(ui->closeButton, SIGNAL(clicked()), this, SLOT(close()));
 }
 
-InfoDialog::~InfoDialog()
-{
+InfoDialog::~InfoDialog(){
     delete ui;
 }

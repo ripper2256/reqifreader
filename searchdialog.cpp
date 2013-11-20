@@ -28,6 +28,7 @@ SearchDialog::SearchDialog(QWidget *parent, QTreeWidget *tree) : QDialog(parent)
     connect(ui->previousButton, SIGNAL(clicked()), this, SLOT(prev()));
     treeWidget = tree;
     currentPosition = 0;
+    setEnableButtons(false);
 }
 
 SearchDialog::~SearchDialog(){
@@ -38,11 +39,17 @@ SearchDialog::~SearchDialog(){
 void SearchDialog::reset(){
     currentPosition = 0;
     searchResults.clear();
+    setEnableButtons(false);
+}
+
+void SearchDialog::setEnableButtons(bool enabled){
+    ui->nextButton->setEnabled(enabled);
+    ui->previousButton->setEnabled(enabled);
 }
 
 void SearchDialog::search(){
+    reset();
     if(ui->lineEditSearch->text().isEmpty()){
-        reset();
         return;
     }
 
@@ -58,6 +65,7 @@ void SearchDialog::search(){
     }
     if(!searchResults.empty())
         treeWidget->setCurrentItem(searchResults.at(currentPosition));
+    setEnableButtons(!searchResults.empty());
 }
 
 void SearchDialog::next(){
