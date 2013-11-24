@@ -16,30 +16,59 @@
 */
 
 #include "specobject.h"
-#include <QDebug>
+
+/**
+ * @brief SpecObject::SpecObject this constructor should not be used, it is just nesessary for list operations
+ */
 SpecObject::SpecObject(){
 }
 
+/**
+ * @brief SpecObject::SpecObject constructor
+ * @param reqifID
+ */
 SpecObject::SpecObject(const QString &reqifID){
     identifier = reqifID;
 }
 
+/**
+ * @brief SpecObject::getReqifID returns reqifid for this spec-object
+ * @return
+ */
 QString SpecObject::getReqifID(){
     return identifier;
 }
 
+/**
+ * @brief SpecObject::~SpecObject
+ */
 SpecObject::~SpecObject(){
     attributeValues.clear();
 }
 
+/**
+ * @brief SpecObject::addAttributValue adds a attribut value
+ * @param attrID reqifid for this attribute
+ * @param value actual value
+ */
 void SpecObject::addAttributValue(const QString &attrID, const QString &value){
     attributeValues.insert(attrID, value);
 }
 
+/**
+ * @brief SpecObject::getAttributValue gets the attribut value from
+ * @param attrID attribute reqifid
+ * @return
+ */
 QString SpecObject::getAttributValue(const QString &attrID){
     return attributeValues.value(attrID);
 }
 
+/**
+ * @brief SpecObject::mergeTextAndHeading merges text and heading into the text attribut
+ * @param txtID
+ * @param headingID
+ */
 void SpecObject::mergeTextAndHeading(const QString &txtID, const QString &headingID){
     QString txt = attributeValues.value(txtID);
     QString heading = attributeValues.value(headingID);

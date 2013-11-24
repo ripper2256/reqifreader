@@ -20,8 +20,13 @@
 #include "infodialog.h"
 #include <QFileDialog>
 #include <QMessageBox>
+#include <QErrorMessage>
 #include <QDebug>
 
+/**
+ * @brief MainWindow::MainWindow constructor
+ * @param parent
+ */
 MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWindow){
     ui->setupUi(this);
     connect(ui->actionExit, SIGNAL(triggered()), this, SLOT(close()));
@@ -31,12 +36,17 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
     connect(ui->actionSearch, SIGNAL(triggered()), this, SLOT(search()));
     connect(ui->actionList_View, SIGNAL(triggered()), this, SLOT(switchView()));
     connect(ui->actionMerge, SIGNAL(triggered()), this, SLOT(switchMerge()));
+
     listView = false;
 }
 
 MainWindow::~MainWindow(){
     delete ui;
 }
+
+/**
+ * @brief MainWindow::open routine for opening a reqif file
+ */
 void MainWindow::open(){
     fileName = QFileDialog::getOpenFileName(this,
                                    tr("Open ReqIF File"), ".",
@@ -44,9 +54,9 @@ void MainWindow::open(){
     if (!fileName.isEmpty()){
         QFile file(fileName);
         if (!file.open(QFile::ReadOnly | QFile::Text)) {
-            /*std::cerr << "Error: Cannot read file " << qPrintable(fileName)
-                      << ": " << qPrintable(file.errorString())
-                      << std::endl;*/
+            QErrorMessage errorMessage;
+            errorMessage.showMessage(tr("Error: Cannot read file ") + qPrintable(fileName) +": " + qPrintable(file.errorString()));
+            errorMessage.exec();
         }
 
         if(parser != NULL){
@@ -64,7 +74,9 @@ void MainWindow::open(){
     }
 }
 
-
+/**
+ * @brief MainWindow::info this dialog shows more infos about the current reqif file
+ */
 void MainWindow::info(){
     if(parser != NULL){
         InfoDialog dialog(this, parser->getTitle(), parser->getreqIfSourceTool(), parser->getCreationTime());
@@ -103,9 +115,6 @@ void MainWindow::switchMerge(){
     if (!fileName.isEmpty()){
         QFile file(fileName);
         if (!file.open(QFile::ReadOnly | QFile::Text)) {
-            /*std::cerr << "Error: Cannot read file " << qPrintable(fileName)
-                      << ": " << qPrintable(file.errorString())
-                      << std::endl;*/
         }
 
         if(parser != NULL){
@@ -124,6 +133,9 @@ void MainWindow::switchMerge(){
     }
 }
 
+/**
+ * @brief MainWindow::search opens search dialog
+ */
 void MainWindow::search(){
     if (!searchDialog) {
          searchDialog = new SearchDialog(this, ui->treeWidget);
@@ -133,9 +145,13 @@ void MainWindow::search(){
      searchDialog->activateWindow();
 }
 
+/**
+ * @brief MainWindow::about shows infos about this programm
+ */
 void MainWindow::about(){
     QMessageBox::about(this, tr("About ReqIF Reader"),
             tr("<h2>ReqIF Reader 0.1</h2>"
+               "<a href=\"https://github.com/ripper2256/reqifreader\">https://github.com/ripper2256/reqifreader</a>"
                "<p>This program is free software; you can redistribute it and/or modify "
                "it under the terms of the GNU General Public License as published by the Free Software "
                "Foundation; either version 3 of the License, or (at your option) any later version."

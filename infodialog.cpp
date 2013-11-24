@@ -17,7 +17,13 @@
 
 #include "infodialog.h"
 #include "ui_infodialog.h"
-
+/**
+ * @brief InfoDialog::InfoDialog
+ * @param parent
+ * @param title
+ * @param sourceTool
+ * @param creaTime
+ */
 InfoDialog::InfoDialog(QWidget *parent, const QString &title, const QString &sourceTool, const QString &creaTime) : QDialog(parent),
     ui(new Ui::InfoDialog){
 
@@ -27,7 +33,9 @@ InfoDialog::InfoDialog(QWidget *parent, const QString &title, const QString &sou
     ui->lECreaTime->setText(creaTime);
     connect(ui->closeButton, SIGNAL(clicked()), this, SLOT(close()));
 }
-
+/**
+ * @brief InfoDialog::~InfoDialog
+ */
 InfoDialog::~InfoDialog(){
     delete ui;
 }

@@ -42,6 +42,11 @@ void DomParser::clear(){
     doc.clear();
 }
 
+/**
+ * @brief DomParser::readFile wrapping method for parsing a reqif xml file
+ * @param file
+ * @return
+ */
 bool DomParser::readFile(QFile &file){
     QString errorStr;
     int errorLine;
@@ -69,6 +74,10 @@ bool DomParser::readFile(QFile &file){
     return true;
 }
 
+/**
+ * @brief DomParser::parseReqIfXmlFile entry method for parsing a reqif QDomElement structure
+ * @param element
+ */
 void DomParser::parseReqIfXmlFile(const QDomElement &element){
     QDomNode child = element.firstChild();
     while (!child.isNull()) {
@@ -83,6 +92,10 @@ void DomParser::parseReqIfXmlFile(const QDomElement &element){
 
 }
 
+/**
+ * @brief DomParser::parseHeader parses the header section, of a reqif file
+ * @param element
+ */
 void DomParser::parseHeader(const QDomNode &element){
     QDomNode child = element.firstChild();
     while (!child.isNull()) {
@@ -102,6 +115,10 @@ void DomParser::parseHeader(const QDomNode &element){
     }
 }
 
+/**
+ * @brief DomParser::parseCoreContent parses the CORE-CONTENT of a reqif file
+ * @param element
+ */
 void DomParser::parseCoreContent(const QDomNode &element){
     QDomNode child = element;
     while (!child.isNull()) {
@@ -115,6 +132,7 @@ void DomParser::parseCoreContent(const QDomNode &element){
             parseDatatypes(child.toElement());
         }
         if (child.toElement().tagName() == "SPECIFICATIONS"){
+            //creates a delegate for the treewidget
             HTMLDelegate* delegate = new HTMLDelegate();
             treeWidget->setItemDelegate(delegate);
             treeWidget->header()->setSectionsMovable(true);
@@ -124,6 +142,11 @@ void DomParser::parseCoreContent(const QDomNode &element){
     }
 }
 
+/**
+ * @brief DomParser::parseSpecifications
+ * @param element
+ * @param parent
+ */
 void DomParser::parseSpecifications(const QDomNode &element, QTreeWidgetItem *parent){
     QDomNode child = element.firstChildElement("CHILDREN").firstChild();
      while (!child.isNull()) {
@@ -140,21 +163,10 @@ void DomParser::parseSpecifications(const QDomNode &element, QTreeWidgetItem *pa
 
          QHash<QString, int>::iterator i;
          for (i = specAttributes.begin(); i != specAttributes.end(); ++i){
-
-             /*QWidget* w = new QWidget();
-
-             QVBoxLayout* vbl = new QVBoxLayout(w);
-             QLabel* lab_01 = new QLabel(specObject.getAttributValue(i.key()));
-
-             vbl->addWidget(lab_01);
-             vbl->setSizeConstraint(QLayout::SetNoConstraint);
-             w->setLayout(vbl);
-             treeWidget->setItemWidget(item,i.value(), w);*/
-
-             //item->setData();
              item->setText(i.value(), specObject.getAttributValue(i.key()));
          }
 
+         //stop parsing child nodes, if it is an internal table (e.g. doors table)
          if(child.toElement().hasAttribute("IS-TABLE-INTERNAL")){
              if(child.toElement().attribute("IS-TABLE-INTERNAL") == "true")
                  tableInternal = true;
@@ -166,6 +178,10 @@ void DomParser::parseSpecifications(const QDomNode &element, QTreeWidgetItem *pa
      }
 }
 
+/**
+ * @brief DomParser::parseDatatypes parses all posible enum values
+ * @param element
+ */
 void DomParser::parseDatatypes(const QDomNode &element){
     QDomNode child = element.firstChild();
     while (!child.isNull()) {
@@ -173,7 +189,6 @@ void DomParser::parseDatatypes(const QDomNode &element){
             QDomNode enumDatatype = child.firstChild().firstChild();
             while (!enumDatatype.isNull()) {
                 enumValues.insert(enumDatatype.toElement().attribute("IDENTIFIER"), enumDatatype.toElement().attribute("LONG-NAME"));
-                //qDebug() << enumDatatype.toElement().attribute("IDENTIFIER");
                 enumDatatype = enumDatatype.nextSibling();
             }
 
@@ -192,26 +207,33 @@ void DomParser::parseSpecTypes(const QDomNode &element){
                 specAttributes.insert(attrDefElement.toElement().attribute("IDENTIFIER"), specAttributes.size());
                 QString longName = attrDefElement.toElement().attribute("LONG-NAME");
                 labels << longName;
-                if(longName == REQIF_TEXT){
+                if(longName == REQIF_TEXT){ //has reqif.text attribute
                     textAttribut = attrDefElement.toElement().attribute("IDENTIFIER");
                 }
-                if(longName == REQIF_CHAPTER_NAME){
+                if(longName == REQIF_CHAPTER_NAME){ //has reqif.chapterName
                     headingAttribut = attrDefElement.toElement().attribute("IDENTIFIER");
                 }
                 attrDefElement = attrDefElement.nextSibling();
             }
-            //qDebug() << child.firstChild().firstChild().toElement().attribute("LONG-NAME");
         }
         child = child.nextSibling();
     }
     treeWidget->setHeaderLabels(labels);
 
+    //if text and chaptername exist and should be merged
     if(mergeTextAndChapterName && labels.contains(REQIF_TEXT) && labels.contains(REQIF_CHAPTER_NAME)){
         treeWidget->header()->hideSection(specAttributes.value(headingAttribut));
     } else {
         headingAttribut.clear();
         textAttribut.clear();
     }
+
+    //doubles size of reqif.text column
+    if(!textAttribut.isEmpty()){
+        const int oldSize = treeWidget->header()->sectionSize(specAttributes.value(textAttribut));
+        treeWidget->header()->resizeSection(specAttributes.value(textAttribut), 2*oldSize);
+    }
+
 
 }
 
@@ -224,7 +246,10 @@ void DomParser::parseSpecObjects(const QDomNode &element){
 
 }
 
-
+/**
+ * @brief DomParser::replaceXhtmlObjects replace object tag with image tag
+ * @param element
+ */
 void DomParser::replaceXhtmlObjects(const QDomNode &element){
     QDomNode child = element.firstChild();
     while (!child.isNull()) {
@@ -246,20 +271,20 @@ void DomParser::replaceXhtmlObjects(const QDomNode &element){
     }
 }
 
-
+/**
+ * @brief DomParser::parseSpecObject parse an individual specobject
+ * @param element
+ */
 void DomParser::parseSpecObject(const QDomNode &element){
     QDomNode child = element.firstChild();
-    //QTreeWidgetItem *item = new QTreeWidgetItem(treeWidget->invisibleRootItem());
     QString reqifID = element.parentNode().toElement().attribute("IDENTIFIER");
     SpecObject specObject(reqifID);
 
     while (!child.isNull()) {
-        if(child.toElement().hasAttribute("THE-VALUE")){
-            //int position = specAttributes.value(child.firstChildElement("DEFINITION").firstChild().toElement().text());
-            //item->setText(position, child.toElement().attribute("THE-VALUE"));
+        if(child.toElement().hasAttribute("THE-VALUE")){ //parses simple attributs, e.g. real, int, etc.
             specObject.addAttributValue(child.firstChildElement("DEFINITION").firstChild().toElement().text(),child.toElement().attribute("THE-VALUE"));
         }
-        if(child.toElement().tagName() == "ATTRIBUTE-VALUE-XHTML"){
+        if(child.toElement().tagName() == "ATTRIBUTE-VALUE-XHTML"){ //parses xhtml attributes
             QDomNode xhtml = child.firstChildElement("THE-VALUE");
 
             replaceXhtmlObjects(xhtml);
@@ -272,7 +297,7 @@ void DomParser::parseSpecObject(const QDomNode &element){
             specObject.addAttributValue(child.firstChildElement("DEFINITION").firstChild().toElement().text(), str);
         }
 
-        if(child.toElement().tagName() == "ATTRIBUTE-VALUE-ENUMERATION"){
+        if(child.toElement().tagName() == "ATTRIBUTE-VALUE-ENUMERATION"){ //parses enum values
             QDomNode enumValueRef = child.firstChild().firstChild();
             QString enumAsString = "";
             while (!enumValueRef.isNull()) {

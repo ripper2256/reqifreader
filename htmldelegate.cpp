@@ -21,6 +21,12 @@
 #include <QTextDocument>
 #include <QAbstractTextDocumentLayout>
 
+/**
+ * @brief HTMLDelegate::paint Delegate for showing html formated text
+ * @param painter
+ * @param option
+ * @param index
+ */
 void HTMLDelegate::paint(QPainter* painter, const QStyleOptionViewItem & option, const QModelIndex &index) const{
     QStyleOptionViewItemV4 options = option;
     initStyleOption(&options, index);
@@ -40,7 +46,12 @@ void HTMLDelegate::paint(QPainter* painter, const QStyleOptionViewItem & option,
 
     painter->restore();
 }
-
+/**
+ * @brief HTMLDelegate::sizeHint
+ * @param option
+ * @param index
+ * @return
+ */
 QSize HTMLDelegate::sizeHint ( const QStyleOptionViewItem & option, const QModelIndex & index ) const{
     QStyleOptionViewItemV4 options = option;
     initStyleOption(&options, index);

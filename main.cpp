@@ -23,6 +23,12 @@
 #include "mainwindow.h"
 #include <QApplication>
 
+/**
+ * @brief main Small mian method, starts only the MainWindow
+ * @param argc
+ * @param argv
+ * @return
+ */
 int main(int argc, char *argv[]){
     QApplication app(argc, argv);
     MainWindow mainWindow;

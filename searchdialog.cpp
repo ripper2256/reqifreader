@@ -42,11 +42,18 @@ void SearchDialog::reset(){
     setEnableButtons(false);
 }
 
+/**
+ * @brief SearchDialog::setEnableButtons enables or disables the next and previous button
+ * @param enabled
+ */
 void SearchDialog::setEnableButtons(bool enabled){
     ui->nextButton->setEnabled(enabled);
     ui->previousButton->setEnabled(enabled);
 }
 
+/**
+ * @brief SearchDialog::search serach routine
+ */
 void SearchDialog::search(){
     reset();
     if(ui->lineEditSearch->text().isEmpty()){
@@ -68,6 +75,9 @@ void SearchDialog::search(){
     setEnableButtons(!searchResults.empty());
 }
 
+/**
+ * @brief SearchDialog::next hops to netx search result
+ */
 void SearchDialog::next(){
     if(searchResults.empty())
         return;
@@ -75,6 +85,9 @@ void SearchDialog::next(){
     treeWidget->setCurrentItem(searchResults.at(currentPosition));
 }
 
+/**
+ * @brief SearchDialog::prev hops to previous search result
+ */
 void SearchDialog::prev(){
     if(searchResults.empty())
         return;
