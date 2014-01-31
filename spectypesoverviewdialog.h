@@ -14,45 +14,27 @@
  *  You should have received a copy of the GNU General Public License
  *  along with ReqIf Reader.  If not, see <http://www.gnu.org/licenses/>.
 */
+#ifndef SPECTYPESOVERVIEWDIALOG_H
+#define SPECTYPESOVERVIEWDIALOG_H
 
-#ifndef MAINWINDOW_H
-#define MAINWINDOW_H
-
-#include <QMainWindow>
-#include "domparser.h"
-#include "searchdialog.h"
-#include "spectypesoverviewdialog.h"
+#include <QDialog>
+#include "spectype.h"
 
 namespace Ui {
-class MainWindow;
+class SpecTypesOverviewDialog;
 }
 
-class MainWindow : public QMainWindow
+class SpecTypesOverviewDialog : public QDialog
 {
     Q_OBJECT
-    
-public:
-    explicit MainWindow(QWidget *parent = 0);
-    ~MainWindow();
 
-private slots:
-    void open();
-    void about();
-    void info();
-    void search();
-    void switchView();
-    void switchMerge();
-    void showSpecTypes();
+public:
+    explicit SpecTypesOverviewDialog(QWidget *parent = 0);
+    ~SpecTypesOverviewDialog();
+    void setSpecTypeList(QList<SpecType> stList);
 
 private:
-    Ui::MainWindow *ui;
-    DomParser *parser = NULL;
-    SearchDialog *searchDialog = NULL;
-    SpecTypesOverviewDialog *specTypeOverview = NULL;
-
-    bool listView;
-    bool mergeTextAndChapter = true;
-    QString fileName;
+    Ui::SpecTypesOverviewDialog *ui;
 };
 
-#endif // MAINWINDOW_H
+#endif // SPECTYPESOVERVIEWDIALOG_H

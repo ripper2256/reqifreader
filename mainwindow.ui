@@ -69,8 +69,15 @@
     <addaction name="actionList_View"/>
     <addaction name="actionMerge"/>
    </widget>
+   <widget class="QMenu" name="menuInformation">
+    <property name="title">
+     <string>Information</string>
+    </property>
+    <addaction name="actionSpecTypes_Overview"/>
+   </widget>
    <addaction name="menuFile"/>
    <addaction name="menuView"/>
+   <addaction name="menuInformation"/>
    <addaction name="menuInfo"/>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
@@ -133,6 +140,11 @@
    </property>
    <property name="text">
     <string>Merge Chapter Name &amp;&amp; Text</string>
+   </property>
+  </action>
+  <action name="actionSpecTypes_Overview">
+   <property name="text">
+    <string>Attribute Overview</string>
    </property>
   </action>
  </widget>

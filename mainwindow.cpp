@@ -21,6 +21,7 @@
 #include <QFileDialog>
 #include <QMessageBox>
 #include <QErrorMessage>
+#include <QPushButton>
 #include <QDebug>
 
 /**
@@ -36,6 +37,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
     connect(ui->actionSearch, SIGNAL(triggered()), this, SLOT(search()));
     connect(ui->actionList_View, SIGNAL(triggered()), this, SLOT(switchView()));
     connect(ui->actionMerge, SIGNAL(triggered()), this, SLOT(switchMerge()));
+    connect(ui->actionSpecTypes_Overview, SIGNAL(triggered()), this, SLOT(showSpecTypes()));
 
     listView = false;
 }
@@ -143,6 +145,18 @@ void MainWindow::search(){
      searchDialog->show();
      searchDialog->raise();
      searchDialog->activateWindow();
+}
+
+
+void MainWindow::showSpecTypes(){
+    if (!specTypeOverview) {
+        specTypeOverview = new SpecTypesOverviewDialog(this);
+    }
+    specTypeOverview->show();
+    specTypeOverview->raise();
+    specTypeOverview->activateWindow();
+    if (parser)
+        specTypeOverview->setSpecTypeList(parser->getSpecTypes());
 }
 
 /**

@@ -22,6 +22,10 @@
 #include <QHeaderView>
 #include "domparser.h"
 #include "htmldelegate.h"
+#include "spectype.h"
+
+const QString DomParser::REQIF_CHAPTER_NAME = "ReqIF.ChapterName";
+const QString DomParser::REQIF_TEXT = "ReqIF.Text";
 
 DomParser::DomParser(QTreeWidget *tree, bool viewAsList, bool mergeTextAndChapter){
     treeWidget = tree;
@@ -39,6 +43,7 @@ void DomParser::clear(){
     specAttributes.clear();
     enumValues.clear();
     specObjectList.clear();
+    specTypeList.clear();
     doc.clear();
 }
 
@@ -126,17 +131,24 @@ void DomParser::parseCoreContent(const QDomNode &element){
             parseSpecTypes(child.toElement());
         }
         if (child.toElement().tagName() == "SPEC-OBJECTS"){
+            //QTime myTimer;
+            //myTimer.start();
             parseSpecObjects(child.toElement());
+            /*int nMilliseconds = myTimer.elapsed();
+            qDebug() << "SPEC-OBJECTS";
+            qDebug() << nMilliseconds;*/
         }
         if (child.toElement().tagName() == "DATATYPES"){
             parseDatatypes(child.toElement());
         }
         if (child.toElement().tagName() == "SPECIFICATIONS"){
+            treeWidget->hide();
             //creates a delegate for the treewidget
             HTMLDelegate* delegate = new HTMLDelegate();
             treeWidget->setItemDelegate(delegate);
             treeWidget->header()->setSectionsMovable(true);
             parseSpecifications(child.toElement().firstChild(), treeWidget->invisibleRootItem());
+            treeWidget->show();
         }
         child = child.nextSibling();
     }
@@ -204,7 +216,8 @@ void DomParser::parseSpecTypes(const QDomNode &element){
         if(child.toElement().tagName() == "SPEC-OBJECT-TYPE"){
             QDomNode attrDefElement = child.firstChild().firstChild();
             while (!attrDefElement.isNull()) {
-                specAttributes.insert(attrDefElement.toElement().attribute("IDENTIFIER"), specAttributes.size());
+                QString reqifID = attrDefElement.toElement().attribute("IDENTIFIER");
+                specAttributes.insert(reqifID, specAttributes.size());
                 QString longName = attrDefElement.toElement().attribute("LONG-NAME");
                 labels << longName;
                 if(longName == REQIF_TEXT){ //has reqif.text attribute
@@ -213,6 +226,9 @@ void DomParser::parseSpecTypes(const QDomNode &element){
                 if(longName == REQIF_CHAPTER_NAME){ //has reqif.chapterName
                     headingAttribut = attrDefElement.toElement().attribute("IDENTIFIER");
                 }
+                SpecType specType(reqifID, longName, attrDefElement.toElement().tagName(), "");
+                specTypeList.append(specType);
+
                 attrDefElement = attrDefElement.nextSibling();
             }
         }
@@ -280,6 +296,9 @@ void DomParser::parseSpecObject(const QDomNode &element){
     QString reqifID = element.parentNode().toElement().attribute("IDENTIFIER");
     SpecObject specObject(reqifID);
 
+    QString str;
+    QTextStream stream(&str);
+
     while (!child.isNull()) {
         if(child.toElement().hasAttribute("THE-VALUE")){ //parses simple attributs, e.g. real, int, etc.
             specObject.addAttributValue(child.firstChildElement("DEFINITION").firstChild().toElement().text(),child.toElement().attribute("THE-VALUE"));
@@ -288,10 +307,9 @@ void DomParser::parseSpecObject(const QDomNode &element){
             QDomNode xhtml = child.firstChildElement("THE-VALUE");
 
             replaceXhtmlObjects(xhtml);
-            QString str;
-            QTextStream stream(&str);
-
+            str.clear();
             xhtml.firstChild().save(stream, 4);
+            stream.flush();
             str.replace(QString("xhtml:"), QString(""));
 
             specObject.addAttributValue(child.firstChildElement("DEFINITION").firstChild().toElement().text(), str);
@@ -342,3 +360,6 @@ void DomParser::setMerge(bool mergeTextAndChapter){
     mergeTextAndChapterName = mergeTextAndChapter;
 }
 
+QList <SpecType> DomParser::getSpecTypes(){
+    return specTypeList;
+}

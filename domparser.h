@@ -19,6 +19,7 @@
 #define DOMPARSER_H
 
 #include <specobject.h>
+#include "spectype.h"
 #include <QtXml>
 
 class QTreeWidget;
@@ -39,6 +40,7 @@ public:
     QString getreqIfSourceTool();
     void setListView(bool viewAsList);
     void setMerge(bool mergeTextAndChapter);
+    QList <SpecType> getSpecTypes();
 
 private:
     void parseReqIfXmlFile(const QDomElement &element);
@@ -55,6 +57,7 @@ private:
     QHash<QString, int> specAttributes;
     QHash<QString, QString> enumValues;
     QHash<QString, SpecObject> specObjectList;
+    QList <SpecType> specTypeList;
     QDomDocument doc;
     QString xmlPath;
     //Header information
@@ -65,8 +68,8 @@ private:
     QString reqifSourceTool;
     QString headingAttribut;
     QString textAttribut;
-    const QString REQIF_TEXT = "ReqIF.Text";
-    const QString REQIF_CHAPTER_NAME = "ReqIF.ChapterName";
+    static const QString REQIF_TEXT;
+    static const QString REQIF_CHAPTER_NAME;
     bool listView;
     bool mergeTextAndChapterName;
 };
