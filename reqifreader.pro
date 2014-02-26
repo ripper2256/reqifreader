@@ -9,7 +9,9 @@ HEADERS       = domparser.h \
     htmldelegate.h \
     searchdialog.h \
     spectypesoverviewdialog.h \
-    spectype.h
+    spectype.h \
+    rifparser.h \
+    parser.h
 SOURCES       = domparser.cpp \
                 main.cpp \
     specobject.cpp \
@@ -18,7 +20,9 @@ SOURCES       = domparser.cpp \
     htmldelegate.cpp \
     searchdialog.cpp \
     spectypesoverviewdialog.cpp \
-    spectype.cpp
+    spectype.cpp \
+    rifparser.cpp \
+    parser.cpp
 
 FORMS += \
     mainwindow.ui \

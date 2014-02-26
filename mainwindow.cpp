@@ -40,6 +40,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
     connect(ui->actionSpecTypes_Overview, SIGNAL(triggered()), this, SLOT(showSpecTypes()));
 
     listView = false;
+    mergeTextAndChapter = true;
 }
 
 MainWindow::~MainWindow(){
@@ -53,26 +54,52 @@ void MainWindow::open(){
     fileName = QFileDialog::getOpenFileName(this,
                                    tr("Open ReqIF File"), ".",
                                    tr("ReqIf files (*.reqif *.xml)"));
+    openXmlFile();
+}
+
+void MainWindow::openXmlFile(){
     if (!fileName.isEmpty()){
+        QString errorStr;
+        int errorLine;
+        int errorColumn;
+        QDomDocument doc;
+
         QFile file(fileName);
         if (!file.open(QFile::ReadOnly | QFile::Text)) {
             QErrorMessage errorMessage;
             errorMessage.showMessage(tr("Error: Cannot read file ") + qPrintable(fileName) +": " + qPrintable(file.errorString()));
             errorMessage.exec();
+            return;
         }
 
         if(parser != NULL){
             parser->clear();
         }
 
-        parser = new DomParser(ui->treeWidget, listView, mergeTextAndChapter);
-        if(parser->readFile(file)){
-            QFileInfo fileInfo(file.fileName());
-            setWindowTitle(fileInfo.fileName() +tr(" - ReqIF Reader"));
-        } else {
-
+        if (!doc.setContent(&file, false, &errorStr, &errorLine, &errorColumn)) {
+            qDebug() << errorStr;
+            return;
         }
 
+        QDomElement root = doc.documentElement();
+
+        if (root.tagName() == "REQ-IF") {
+            parser = new DomParser(ui->treeWidget, listView, mergeTextAndChapter);
+        } else if (root.tagName() == "RIF") {
+            parser = new RifParser(ui->treeWidget, listView, mergeTextAndChapter);
+        } else {
+            doc.clear();
+            file.close();
+            return;
+        }
+
+        QFileInfo fileInfo(file.fileName());
+        QString xmlPath = fileInfo.path();
+
+        parser->parseStructure(doc, xmlPath);
+        setWindowTitle(fileInfo.fileName() +tr(" - ReqIF Reader"));
+        doc.clear();
+        file.close();
     }
 }
 
@@ -88,51 +115,12 @@ void MainWindow::info(){
 
 void MainWindow::switchView(){
     listView = !listView;
-    if (!fileName.isEmpty()){
-        QFile file(fileName);
-        if (!file.open(QFile::ReadOnly | QFile::Text)) {
-            /*std::cerr << "Error: Cannot read file " << qPrintable(fileName)
-                      << ": " << qPrintable(file.errorString())
-                      << std::endl;*/
-        }
-
-        if(parser != NULL){
-            parser->clear();
-        }
-
-        parser = new DomParser(ui->treeWidget, listView, mergeTextAndChapter);
-        parser->setListView(listView);
-        if(parser->readFile(file)){
-            QFileInfo fileInfo(file.fileName());
-            setWindowTitle(fileInfo.fileName() +tr(" - ReqIF Reader"));
-        } else {
-
-        }
-
-    }
+    openXmlFile();
 }
 
 void MainWindow::switchMerge(){
     mergeTextAndChapter = !mergeTextAndChapter;
-    if (!fileName.isEmpty()){
-        QFile file(fileName);
-        if (!file.open(QFile::ReadOnly | QFile::Text)) {
-        }
-
-        if(parser != NULL){
-            parser->clear();
-        }
-
-        parser = new DomParser(ui->treeWidget, listView, mergeTextAndChapter);
-        parser->setMerge(mergeTextAndChapter);
-        if(parser->readFile(file)){
-            QFileInfo fileInfo(file.fileName());
-            setWindowTitle(fileInfo.fileName() +tr(" - ReqIF Reader"));
-        } else {
-
-        }
-
-    }
+    openXmlFile();
 }
 
 /**

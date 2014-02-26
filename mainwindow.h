@@ -22,6 +22,7 @@
 #include "domparser.h"
 #include "searchdialog.h"
 #include "spectypesoverviewdialog.h"
+#include "rifparser.h"
 
 namespace Ui {
 class MainWindow;
@@ -45,13 +46,14 @@ private slots:
     void showSpecTypes();
 
 private:
+    void openXmlFile();
     Ui::MainWindow *ui;
-    DomParser *parser = NULL;
+    Parser *parser = NULL;
     SearchDialog *searchDialog = NULL;
     SpecTypesOverviewDialog *specTypeOverview = NULL;
 
     bool listView;
-    bool mergeTextAndChapter = true;
+    bool mergeTextAndChapter;
     QString fileName;
 };
 

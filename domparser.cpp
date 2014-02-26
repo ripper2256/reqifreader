@@ -37,45 +37,20 @@ DomParser::~DomParser(){
     clear();
 }
 
-void DomParser::clear(){
-    treeWidget->clear();
-    treeWidget->setColumnCount(0);
-    specAttributes.clear();
-    enumValues.clear();
-    specObjectList.clear();
-    specTypeList.clear();
-    doc.clear();
-}
 
-/**
- * @brief DomParser::readFile wrapping method for parsing a reqif xml file
- * @param file
- * @return
- */
-bool DomParser::readFile(QFile &file){
-    QString errorStr;
-    int errorLine;
-    int errorColumn;
-
-
-    if (!doc.setContent(&file, false, &errorStr, &errorLine, &errorColumn)) {
-        return false;
-    }
-
+bool DomParser::parseStructure(QDomDocument &document, QString &pathToXmlFile){
+    doc = document;
     QDomElement root = doc.documentElement();
 
     if (root.tagName() != "REQ-IF") {
         return false;
     }
-    QFileInfo fileInfo(file.fileName());
-    xmlPath = fileInfo.path();
+    xmlPath = pathToXmlFile;
     parseReqIfXmlFile(root);
     specAttributes.clear();
     enumValues.clear();
     specObjectList.clear();
-    file.close();
     doc.clear();
-
     return true;
 }
 
@@ -332,34 +307,4 @@ void DomParser::parseSpecObject(const QDomNode &element){
     specObjectList.insert(reqifID, specObject);
 }
 
-QString DomParser::getTitle(){
-    return title;
-}
 
-QString DomParser::getCreationTime(){
-    return creationTime;
-}
-
-QString DomParser::getreqIfSourceTool(){
-    return reqifSourceTool;
-}
-
-QString DomParser::getReqIfTool(){
-    return reqIfTool;
-}
-
-QString DomParser::getReqIfVersion(){
-    return reqifVersion;
-}
-
-void DomParser::setListView(bool viewAsList){
-    listView = viewAsList;
-}
-
-void DomParser::setMerge(bool mergeTextAndChapter){
-    mergeTextAndChapterName = mergeTextAndChapter;
-}
-
-QList <SpecType> DomParser::getSpecTypes(){
-    return specTypeList;
-}

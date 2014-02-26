@@ -14,25 +14,31 @@
  *  You should have received a copy of the GNU General Public License
  *  along with ReqIf Reader.  If not, see <http://www.gnu.org/licenses/>.
 */
+#ifndef RIFPARSER_H
+#define RIFPARSER_H
 
-#ifndef DOMPARSER_H
-#define DOMPARSER_H
-
-#include <specobject.h>
+#include <QTreeWidget>
+#include <QLabel>
+#include <QVBoxLayout>
+#include <QPushButton>
+#include <QHeaderView>
+#include "domparser.h"
+#include "htmldelegate.h"
 #include "spectype.h"
 #include "parser.h"
-#include <QtXml>
 
-
-class DomParser : public Parser
+class RifParser : public Parser
 {
 public:
-    DomParser(QTreeWidget *tree, bool viewAsList, bool mergeTextAndChapter);
-    ~DomParser();
+    RifParser(QTreeWidget *tree, bool viewAsList, bool mergeTextAndChapter);
+    ~RifParser();
+    void setListView(bool viewAsList);
+    void setMerge(bool mergeTextAndChapter);
+    QList <SpecType> getSpecTypes();
     bool parseStructure(QDomDocument &document, QString &pathToXmlFile);
 
 private:
-    void parseReqIfXmlFile(const QDomElement &element);
+    void parseRIfXmlFile(const QDomElement &element);
     void parseCoreContent(const QDomNode &element);
     void parseSpecObjects(const QDomNode &element);
     void parseSpecObject(const QDomNode &element);
@@ -41,12 +47,13 @@ private:
     void parseHeader(const QDomNode &element);
     void parseSpecifications(const QDomNode &element, QTreeWidgetItem *parent);
     void replaceXhtmlObjects(const QDomNode &element);
+    void parseEnumValues(const QDomNode &element);
 
     QString xmlPath;
     QString headingAttribut;
     QString textAttribut;
-    static const QString REQIF_TEXT;
-    static const QString REQIF_CHAPTER_NAME;
+    static const QString RIF_TEXT;
+    static const QString RIF_CHAPTER_NAME;
 };
 
-#endif
+#endif // RIFPARSER_H
