@@ -231,7 +231,7 @@ void DomParser::parseSpecTypes(const QDomNode &element){
 void DomParser::parseSpecObjects(const QDomNode &element){
     QDomNode child = element.firstChild();
     while (!child.isNull()) {
-        parseSpecObject(child.toElement().firstChild());
+        parseSpecObject(child.toElement());
         child = child.nextSibling();
     }
 
@@ -267,13 +267,12 @@ void DomParser::replaceXhtmlObjects(const QDomNode &element){
  * @param element
  */
 void DomParser::parseSpecObject(const QDomNode &element){
-    QDomNode child = element.firstChild();
-    QString reqifID = element.parentNode().toElement().attribute("IDENTIFIER");
+    QDomNode child = element.firstChildElement("VALUES").firstChild();
+    QString reqifID = element.toElement().attribute("IDENTIFIER");
     SpecObject specObject(reqifID);
 
     QString str;
     QTextStream stream(&str);
-
     while (!child.isNull()) {
         if(child.toElement().hasAttribute("THE-VALUE")){ //parses simple attributs, e.g. real, int, etc.
             specObject.addAttributValue(child.firstChildElement("DEFINITION").firstChild().toElement().text(),child.toElement().attribute("THE-VALUE"));
