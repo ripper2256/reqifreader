@@ -30,7 +30,7 @@
 class RifParser : public Parser
 {
 public:
-    RifParser(QTreeWidget *tree, bool viewAsList, bool mergeTextAndChapter);
+    RifParser(QTreeView *view, bool mergeTextAndChapter);
     ~RifParser();
     void setListView(bool viewAsList);
     void setMerge(bool mergeTextAndChapter);
@@ -45,9 +45,10 @@ private:
     void parseSpecTypes(const QDomNode &element);
     void parseDatatypes(const QDomNode &element);
     void parseHeader(const QDomNode &element);
-    void parseSpecifications(const QDomNode &element, QTreeWidgetItem *parent);
+    void parseSpecifications(const QDomNode &element, TreeItem *parent = 0);
     void replaceXhtmlObjects(const QDomNode &element);
     void parseEnumValues(const QDomNode &element);
+    void adjustHeaderSection();
 
     QString xmlPath;
     QString headingAttribut;

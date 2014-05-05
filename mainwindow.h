@@ -35,6 +35,7 @@ class MainWindow : public QMainWindow
 public:
     explicit MainWindow(QWidget *parent = 0);
     ~MainWindow();
+    Ui::MainWindow *ui;
 
 private slots:
     void open();
@@ -44,10 +45,12 @@ private slots:
     void switchView();
     void switchMerge();
     void showSpecTypes();
+    void showContextMenu(QTreeWidgetItem* item, const QPoint& globalPos);
+    void onCustomContextMenuRequested(const QPoint& pos);
 
 private:
     void openXmlFile();
-    Ui::MainWindow *ui;
+
     Parser *parser = NULL;
     SearchDialog *searchDialog = NULL;
     SpecTypesOverviewDialog *specTypeOverview = NULL;

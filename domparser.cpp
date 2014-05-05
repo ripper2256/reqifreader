@@ -23,14 +23,13 @@
 #include "domparser.h"
 #include "htmldelegate.h"
 #include "spectype.h"
+#include "treeitem.h"
+
 
 const QString DomParser::REQIF_CHAPTER_NAME = "ReqIF.ChapterName";
 const QString DomParser::REQIF_TEXT = "ReqIF.Text";
 
-DomParser::DomParser(QTreeWidget *tree, bool viewAsList, bool mergeTextAndChapter){
-    treeWidget = tree;
-    listView = viewAsList;
-    mergeTextAndChapterName = mergeTextAndChapter;
+DomParser::DomParser(QTreeView *view, bool mergeTextAndChapter) : Parser(view, mergeTextAndChapter){
 }
 
 DomParser::~DomParser(){
@@ -106,26 +105,37 @@ void DomParser::parseCoreContent(const QDomNode &element){
             parseSpecTypes(child.toElement());
         }
         if (child.toElement().tagName() == "SPEC-OBJECTS"){
-            //QTime myTimer;
-            //myTimer.start();
             parseSpecObjects(child.toElement());
-            /*int nMilliseconds = myTimer.elapsed();
-            qDebug() << "SPEC-OBJECTS";
-            qDebug() << nMilliseconds;*/
         }
         if (child.toElement().tagName() == "DATATYPES"){
             parseDatatypes(child.toElement());
         }
         if (child.toElement().tagName() == "SPECIFICATIONS"){
-            treeWidget->hide();
-            //creates a delegate for the treewidget
+            //creates a delegate for the treeview
             HTMLDelegate* delegate = new HTMLDelegate();
-            treeWidget->setItemDelegate(delegate);
-            treeWidget->header()->setSectionsMovable(true);
-            parseSpecifications(child.toElement().firstChild(), treeWidget->invisibleRootItem());
-            treeWidget->show();
-        }
+            treeView->setItemDelegate(delegate);
+            parseSpecifications(child.toElement().firstChild());
+            treeView->setModel(model);
+            adjustHeaderSection();
+       }
         child = child.nextSibling();
+    }
+}
+
+void DomParser::adjustHeaderSection(){
+    //if text and chaptername exist and should be merged
+    if(mergeTextAndChapterName && labels.contains(REQIF_TEXT) && labels.contains(REQIF_CHAPTER_NAME)){
+        treeView->header()->hideSection(specAttributes.value(headingAttribut));
+    } else {
+        headingAttribut.clear();
+        textAttribut.clear();
+    }
+
+    //doubles size of reqif.text column
+    if(!textAttribut.isEmpty()){
+        const int oldSize = treeView->header()->sectionSize(specAttributes.value(textAttribut));
+        qDebug() << specAttributes.value(textAttribut);
+        treeView->header()->resizeSection(specAttributes.value(textAttribut), 2*oldSize);
     }
 }
 
@@ -134,13 +144,12 @@ void DomParser::parseCoreContent(const QDomNode &element){
  * @param element
  * @param parent
  */
-void DomParser::parseSpecifications(const QDomNode &element, QTreeWidgetItem *parent){
+void DomParser::parseSpecifications(const QDomNode &element, TreeItem *parent){
     QDomNode child = element.firstChildElement("CHILDREN").firstChild();
      while (!child.isNull()) {
          bool tableInternal = false;
-         if(listView)
-             parent = treeWidget->invisibleRootItem();
-         QTreeWidgetItem *item = new QTreeWidgetItem(parent);
+         QList<QVariant> itemData;
+
          QString specObjectID = child.firstChildElement("OBJECT").firstChild().toElement().text();
          SpecObject specObject = specObjectList.value(specObjectID);
 
@@ -149,9 +158,15 @@ void DomParser::parseSpecifications(const QDomNode &element, QTreeWidgetItem *pa
          }
 
          QHash<QString, int>::iterator i;
+         //fill list with items
          for (i = specAttributes.begin(); i != specAttributes.end(); ++i){
-             item->setText(i.value(), specObject.getAttributValue(i.key()));
+             itemData << specObject.getAttributValue(i.key());
          }
+         //place items at correct position
+         for (i = specAttributes.begin(); i != specAttributes.end(); ++i){
+             itemData[i.value()] = specObject.getAttributValue(i.key());
+         }
+         TreeItem *item = model->setupModelData(itemData,parent);
 
          //stop parsing child nodes, if it is an internal table (e.g. doors table)
          if(child.toElement().hasAttribute("IS-TABLE-INTERNAL")){
@@ -186,7 +201,6 @@ void DomParser::parseDatatypes(const QDomNode &element){
 
 void DomParser::parseSpecTypes(const QDomNode &element){
     QDomNode child = element.firstChild();
-    QStringList labels;
     while (!child.isNull()) {
         if(child.toElement().tagName() == "SPEC-OBJECT-TYPE"){
             QDomNode attrDefElement = child.firstChild().firstChild();
@@ -209,22 +223,7 @@ void DomParser::parseSpecTypes(const QDomNode &element){
         }
         child = child.nextSibling();
     }
-    treeWidget->setHeaderLabels(labels);
-
-    //if text and chaptername exist and should be merged
-    if(mergeTextAndChapterName && labels.contains(REQIF_TEXT) && labels.contains(REQIF_CHAPTER_NAME)){
-        treeWidget->header()->hideSection(specAttributes.value(headingAttribut));
-    } else {
-        headingAttribut.clear();
-        textAttribut.clear();
-    }
-
-    //doubles size of reqif.text column
-    if(!textAttribut.isEmpty()){
-        const int oldSize = treeWidget->header()->sectionSize(specAttributes.value(textAttribut));
-        treeWidget->header()->resizeSection(specAttributes.value(textAttribut), 2*oldSize);
-    }
-
+    model->setHeaderData(labels);
 
 }
 

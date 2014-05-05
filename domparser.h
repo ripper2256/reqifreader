@@ -21,13 +21,14 @@
 #include <specobject.h>
 #include "spectype.h"
 #include "parser.h"
+#include "reqmodel.h"
 #include <QtXml>
 
 
 class DomParser : public Parser
 {
 public:
-    DomParser(QTreeWidget *tree, bool viewAsList, bool mergeTextAndChapter);
+    DomParser(QTreeView *view, bool mergeTextAndChapter);
     ~DomParser();
     bool parseStructure(QDomDocument &document, QString &pathToXmlFile);
 
@@ -39,9 +40,9 @@ private:
     void parseSpecTypes(const QDomNode &element);
     void parseDatatypes(const QDomNode &element);
     void parseHeader(const QDomNode &element);
-    void parseSpecifications(const QDomNode &element, QTreeWidgetItem *parent);
+    void parseSpecifications(const QDomNode &element, TreeItem *parent = 0);
     void replaceXhtmlObjects(const QDomNode &element);
-
+    void adjustHeaderSection();
     QString xmlPath;
     QString headingAttribut;
     QString textAttribut;

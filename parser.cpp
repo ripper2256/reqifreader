@@ -1,8 +1,10 @@
 #include "parser.h"
 #include <QTreeWidget>
 
-Parser::Parser()
-{
+Parser::Parser(QTreeView *view, bool mergeTextAndChapter){
+    treeView = view;
+    mergeTextAndChapterName = mergeTextAndChapter;
+    model = new ReqModel();
 }
 
 Parser::~Parser(){
@@ -10,8 +12,6 @@ Parser::~Parser(){
 }
 
 void Parser::clear(){
-    treeWidget->clear();
-    treeWidget->setColumnCount(0);
     specAttributes.clear();
     enumValues.clear();
     specObjectList.clear();
@@ -41,10 +41,6 @@ QString Parser::getReqIfVersion(){
 
 QList <SpecType> Parser::getSpecTypes(){
     return specTypeList;
-}
-
-void Parser::setListView(bool viewAsList){
-    listView = viewAsList;
 }
 
 void Parser::setMerge(bool mergeTextAndChapter){

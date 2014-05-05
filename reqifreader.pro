@@ -11,6 +11,8 @@ HEADERS       = domparser.h \
     spectypesoverviewdialog.h \
     spectype.h \
     rifparser.h \
+    reqmodel.h \
+    treeitem.h \
     parser.h
 SOURCES       = domparser.cpp \
                 main.cpp \
@@ -22,6 +24,8 @@ SOURCES       = domparser.cpp \
     spectypesoverviewdialog.cpp \
     spectype.cpp \
     rifparser.cpp \
+    reqmodel.cpp \
+    treeitem.cpp \
     parser.cpp
 
 FORMS += \

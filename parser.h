@@ -3,7 +3,9 @@
 
 #include <specobject.h>
 #include "spectype.h"
+#include "reqmodel.h"
 #include <QtXml>
+#include <QTreeView>
 
 class QTreeWidget;
 class QTreeWidgetItem;
@@ -12,7 +14,7 @@ class QFile;
 class Parser
 {
 public:
-    Parser();
+    Parser(QTreeView *view, bool mergeTextAndChapter);
     ~Parser();
     virtual bool parseStructure(QDomDocument &document, QString &pathToXmlFile) = 0;
     void clear();
@@ -26,13 +28,14 @@ public:
     void setMerge(bool mergeTextAndChapter);
 
 protected:
-    QTreeWidget *treeWidget;
+    QTreeView *treeView;
+    ReqModel *model;
+    QStringList labels;
     QHash<QString, int> specAttributes;
     QHash<QString, QString> enumValues;
     QHash<QString, SpecObject> specObjectList;
     QList <SpecType> specTypeList;
     QDomDocument doc;
-    bool listView;
     bool mergeTextAndChapterName;
     //Header information
     QString title;

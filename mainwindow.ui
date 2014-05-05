@@ -21,17 +21,7 @@
        <enum>QLayout::SetNoConstraint</enum>
       </property>
       <item>
-       <widget class="QTreeWidget" name="treeWidget">
-        <property name="autoFillBackground">
-         <bool>false</bool>
-        </property>
-        <property name="autoExpandDelay">
-         <number>-1</number>
-        </property>
-        <property name="columnCount">
-         <number>0</number>
-        </property>
-       </widget>
+       <widget class="QTreeView" name="treeView"/>
       </item>
      </layout>
     </item>

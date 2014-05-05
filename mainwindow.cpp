@@ -30,6 +30,8 @@
  */
 MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWindow){
     ui->setupUi(this);
+    //ui->treeWidget->setContextMenuPolicy(Qt::CustomContextMenu);
+    //connect(ui->treeWidget, SIGNAL(customContextMenuRequested(const QPoint&)), SLOT(onCustomContextMenuRequested(const QPoint&)));
     connect(ui->actionExit, SIGNAL(triggered()), this, SLOT(close()));
     connect(ui->actionAbout, SIGNAL(triggered()), this, SLOT(about()));
     connect(ui->actionOpen, SIGNAL(triggered()), this, SLOT(open()));
@@ -84,9 +86,9 @@ void MainWindow::openXmlFile(){
         QDomElement root = doc.documentElement();
 
         if (root.tagName() == "REQ-IF") {
-            parser = new DomParser(ui->treeWidget, listView, mergeTextAndChapter);
+            parser = new DomParser(ui->treeView, mergeTextAndChapter);
         } else if (root.tagName() == "RIF") {
-            parser = new RifParser(ui->treeWidget, listView, mergeTextAndChapter);
+            parser = new RifParser(ui->treeView, mergeTextAndChapter);
         } else {
             doc.clear();
             file.close();
@@ -115,7 +117,12 @@ void MainWindow::info(){
 
 void MainWindow::switchView(){
     listView = !listView;
-    openXmlFile();
+    if(listView) {
+        ui->treeView->expandAll();
+    } else {
+        ui->treeView->collapseAll();
+    }
+
 }
 
 void MainWindow::switchMerge(){
@@ -128,7 +135,7 @@ void MainWindow::switchMerge(){
  */
 void MainWindow::search(){
     if (!searchDialog) {
-         searchDialog = new SearchDialog(this, ui->treeWidget);
+         //searchDialog = new SearchDialog(this, ui->treeView);
      }
      searchDialog->show();
      searchDialog->raise();
@@ -162,4 +169,19 @@ void MainWindow::about(){
                "<p>See the GNU General Public License for more details. "
                "<p> You should have received a copy of the GNU General Public License along with this "
                "program; if not, write to the Free Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA."));
+}
+
+void MainWindow::onCustomContextMenuRequested(const QPoint& pos) {
+    //QTreeWidgetItem* item = ui->treeWidget->itemAt(pos);
+    //if (item) {
+    // Note: We must map the point to global from the viewport to
+    // account for the header.
+        //showContextMenu(item, ui->treeWidget->viewport()->mapToGlobal(pos));
+    //}
+}
+
+void MainWindow::showContextMenu(QTreeWidgetItem* item, const QPoint& globalPos) {
+    QMenu menu;
+    menu.addAction("This is a type 1");
+    menu.exec(globalPos);
 }
