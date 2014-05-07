@@ -7,7 +7,7 @@
  class TreeItem
  {
  public:
-     TreeItem(const QList<QVariant> &data, TreeItem *parent = 0);
+     TreeItem(const QString &reqifID, const QList<QVariant> &data, const QList<QString> & ref, TreeItem *parent = 0);
      ~TreeItem();
 
      void appendChild(TreeItem *child);
@@ -23,6 +23,8 @@
  private:
      QList<TreeItem*> childItems;
      QList<QVariant> itemData;
+     QList<QString> refData;
+     QString identifier;
      TreeItem *parentItem;
  };
 

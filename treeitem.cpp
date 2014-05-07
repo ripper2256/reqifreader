@@ -2,10 +2,11 @@
 
 #include "treeitem.h"
 
-TreeItem::TreeItem(const QList<QVariant> &data, TreeItem *parent)
-{
+TreeItem::TreeItem(const QString &reqifID, const QList<QVariant> &data, const QList<QString> & ref, TreeItem *parent){
+    identifier = reqifID;
     parentItem = parent;
     itemData = data;
+    refData = ref;
 }
 
 TreeItem::~TreeItem()

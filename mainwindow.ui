@@ -101,6 +101,9 @@
    </property>
   </action>
   <action name="actionSearch">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
    <property name="text">
     <string>Search</string>
    </property>

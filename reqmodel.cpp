@@ -3,29 +3,25 @@
 #include "treeitem.h"
 #include "reqmodel.h"
 
-ReqModel::ReqModel(QObject *parent)
-    : QAbstractItemModel(parent)
-{
+ReqModel::ReqModel(QObject *parent) : QAbstractItemModel(parent){
     QList<QVariant> rootData;
     rootData << "Title" << "Summary";
-    rootItem = new TreeItem(rootData);
+    QList<QString> ref;
+    rootItem = new TreeItem("", rootData, ref);
 }
 
-ReqModel::~ReqModel()
-{
+ReqModel::~ReqModel(){
     delete rootItem;
 }
 
-int ReqModel::columnCount(const QModelIndex &parent) const
-{
+int ReqModel::columnCount(const QModelIndex &parent) const{
     if (parent.isValid())
         return static_cast<TreeItem*>(parent.internalPointer())->columnCount();
     else
         return rootItem->columnCount();
 }
 
-QVariant ReqModel::data(const QModelIndex &index, int role) const
-{
+QVariant ReqModel::data(const QModelIndex &index, int role) const{
     if (!index.isValid())
         return QVariant();
 
@@ -37,12 +33,11 @@ QVariant ReqModel::data(const QModelIndex &index, int role) const
     return item->data(index.column());
 }
 
-Qt::ItemFlags ReqModel::flags(const QModelIndex &index) const
-{
+Qt::ItemFlags ReqModel::flags(const QModelIndex &index) const{
     if (!index.isValid())
         return 0;
 
-    return Qt::ItemIsEnabled | Qt::ItemIsSelectable;
+    return Qt::ItemIsEnabled | Qt::ItemIsSelectable | Qt::ItemIsEditable;
 }
 
 QVariant ReqModel::headerData(int section, Qt::Orientation orientation,
@@ -115,58 +110,12 @@ bool ReqModel::setHeaderData(const QStringList &headers){
 }
 
 
-TreeItem *ReqModel::setupModelData(const QList<QVariant> &columnData, TreeItem *parent){
+TreeItem *ReqModel::setupModelData(const QString &reqifID, const QList<QVariant> &columnData,const QList<QString> &refData, TreeItem *parent){
     if(parent == 0)
         parent = rootItem;
     QList<TreeItem*> parents;
     parents << parent;
-    TreeItem *item = new TreeItem(columnData, parents.last());
+    TreeItem *item = new TreeItem(reqifID, columnData, refData, parents.last());
     parents.last()->appendChild(item);
     return item;
-    //new TreeItem(columnData, parents.last())
-    /*QList<TreeItem*> parents;
-    QList<int> indentations;
-    parents << parent;
-    indentations << 0;
-
-    int number = 0;
-
-    while (number < lines.count()) {
-        int position = 0;
-        while (position < lines[number].length()) {
-            if (lines[number].mid(position, 1) != " ")
-                break;
-            position++;
-        }
-
-        QString lineData = lines[number].mid(position).trimmed();
-
-        if (!lineData.isEmpty()) {
-            // Read the column data from the rest of the line.
-            QStringList columnStrings = lineData.split("\t", QString::SkipEmptyParts);
-            QList<QVariant> columnData;
-            for (int column = 0; column < columnStrings.count(); ++column)
-                columnData << columnStrings[column];
-
-            if (position > indentations.last()) {
-                // The last child of the current parent is now the new parent
-                // unless the current parent has no children.
-
-                if (parents.last()->childCount() > 0) {
-                    parents << parents.last()->child(parents.last()->childCount()-1);
-                    indentations << position;
-                }
-            } else {
-                while (position < indentations.last() && parents.count() > 0) {
-                    parents.pop_back();
-                    indentations.pop_back();
-                }
-            }
-
-            // Append a new item to the current parent's list of children.
-            parents.last()->appendChild(new TreeItem(columnData, parents.last()));
-        }
-
-        number++;
-    }*/
 }

@@ -25,11 +25,10 @@ public:
     QModelIndex parent(const QModelIndex &index) const;
     int rowCount(const QModelIndex &parent = QModelIndex()) const;
     int columnCount(const QModelIndex &parent = QModelIndex()) const;
-    TreeItem *setupModelData(const QList<QVariant> &columnData, TreeItem *parent = 0);
+    TreeItem *setupModelData(const QString &reqifID, const QList<QVariant> &columnData,const QList<QString> &refData, TreeItem *parent = 0);
     bool setHeaderData(const QStringList &headers);
 
 private:
-    //void setupModelData(const QStringList &lines, TreeItem *parent);
 
     TreeItem *rootItem;
 };

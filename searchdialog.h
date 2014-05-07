@@ -18,7 +18,8 @@
 #define SEARCHDIALOG_H
 
 #include <QDialog>
-#include <QTreeWidget>
+#include <QTreeView>
+#include <QTreeWidgetItem>
 
 namespace Ui {
 class SearchDialog;
@@ -29,7 +30,7 @@ class SearchDialog : public QDialog
     Q_OBJECT
 
 public:
-    explicit SearchDialog(QWidget *parent = 0, QTreeWidget *tree = 0);
+    explicit SearchDialog(QWidget *parent = 0, QTreeView *tree = 0);
     ~SearchDialog();
 
 private slots:
@@ -40,9 +41,9 @@ private slots:
 private:
     void reset();
     Ui::SearchDialog *ui;
-    QTreeWidget *treeWidget;
+    QTreeView *treeView;
     int currentPosition;
-    QList <QTreeWidgetItem *> searchResults;
+    QList <QModelIndex> searchResults;
     void setEnableButtons(bool enabled);
 };
 

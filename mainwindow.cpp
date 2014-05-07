@@ -135,7 +135,7 @@ void MainWindow::switchMerge(){
  */
 void MainWindow::search(){
     if (!searchDialog) {
-         //searchDialog = new SearchDialog(this, ui->treeView);
+         searchDialog = new SearchDialog(this, ui->treeView);
      }
      searchDialog->show();
      searchDialog->raise();

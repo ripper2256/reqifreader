@@ -148,7 +148,8 @@ void DomParser::parseSpecifications(const QDomNode &element, TreeItem *parent){
     QDomNode child = element.firstChildElement("CHILDREN").firstChild();
      while (!child.isNull()) {
          bool tableInternal = false;
-         QList<QVariant> itemData;
+         QVector<QVariant> itemData(specAttributes.size());
+         QVector<QString> ref(specAttributes.size());
 
          QString specObjectID = child.firstChildElement("OBJECT").firstChild().toElement().text();
          SpecObject specObject = specObjectList.value(specObjectID);
@@ -158,15 +159,17 @@ void DomParser::parseSpecifications(const QDomNode &element, TreeItem *parent){
          }
 
          QHash<QString, int>::iterator i;
-         //fill list with items
-         for (i = specAttributes.begin(); i != specAttributes.end(); ++i){
-             itemData << specObject.getAttributValue(i.key());
-         }
-         //place items at correct position
          for (i = specAttributes.begin(); i != specAttributes.end(); ++i){
              itemData[i.value()] = specObject.getAttributValue(i.key());
+             ref[i.value()] = i.key();
          }
-         TreeItem *item = model->setupModelData(itemData,parent);
+
+         QList<QVariant> itemList;
+         QList<QString> refList;
+         itemList = itemList.fromVector(itemData);
+         refList = refList.fromVector(ref);
+
+         TreeItem *item = model->setupModelData(specObjectID, itemList, refList, parent);
 
          //stop parsing child nodes, if it is an internal table (e.g. doors table)
          if(child.toElement().hasAttribute("IS-TABLE-INTERNAL")){

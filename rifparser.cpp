@@ -219,7 +219,8 @@ void RifParser::parseSpecTypes(const QDomNode &element){
 void RifParser::parseSpecifications(const QDomNode &element, TreeItem *parent){
     QDomNode child = element.firstChildElement("CHILDREN").firstChildElement("SPEC-HIERARCHY");
     while (!child.isNull()) {
-         QList<QVariant> itemData;
+         QVector<QVariant> itemData(specAttributes.size());
+         QVector<QString> ref(specAttributes.size());
 
          QString specObjectID = child.firstChildElement("OBJECT").firstChild().toElement().text();
          SpecObject specObject = specObjectList.value(specObjectID);
@@ -228,15 +229,18 @@ void RifParser::parseSpecifications(const QDomNode &element, TreeItem *parent){
          }
 
          QHash<QString, int>::iterator i;
-         //fill list with items
-         for (i = specAttributes.begin(); i != specAttributes.end(); ++i){
-             itemData << specObject.getAttributValue(i.key());
-         }
          //place items at correct position
          for (i = specAttributes.begin(); i != specAttributes.end(); ++i){
              itemData[i.value()] = specObject.getAttributValue(i.key());
+             ref[i.value()] = i.key();
          }
-         TreeItem *item = model->setupModelData(itemData,parent);
+
+         QList<QVariant> itemList;
+         QList<QString> refList;
+         itemList = itemList.fromVector(itemData);
+         refList = refList.fromVector(ref);
+
+         TreeItem *item = model->setupModelData(specObjectID, itemList, refList, parent);
 
          parseSpecifications(child, item);
          child = child.nextSibling();

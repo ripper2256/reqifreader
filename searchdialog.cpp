@@ -20,13 +20,13 @@
 #include <QHeaderView>
 #include <QDebug>
 
-SearchDialog::SearchDialog(QWidget *parent, QTreeWidget *tree) : QDialog(parent), ui(new Ui::SearchDialog){
+SearchDialog::SearchDialog(QWidget *parent, QTreeView *tree) : QDialog(parent), ui(new Ui::SearchDialog){
     ui->setupUi(this);
     ui->lineEditSearch->setFocus();
     connect(ui->searchButton, SIGNAL(clicked()), this, SLOT(search()));
     connect(ui->nextButton, SIGNAL(clicked()), this, SLOT(next()));
     connect(ui->previousButton, SIGNAL(clicked()), this, SLOT(prev()));
-    treeWidget = tree;
+    treeView = tree;
     currentPosition = 0;
     setEnableButtons(false);
 }
@@ -60,18 +60,18 @@ void SearchDialog::search(){
         return;
     }
 
-    for(int i=0;i<treeWidget->columnCount();i++){
+    for(int i=0;i<treeView->model()->columnCount();i++){
         Qt::MatchFlags options = Qt::MatchContains | Qt::MatchRecursive;
         if(ui->caseCheckBox->isChecked())
             options = options | Qt::MatchCaseSensitive;
 
         if(ui->regExpCheckBox->isChecked())
             options = options | Qt::MatchRegExp;
-
-        searchResults.append(treeWidget->findItems(ui->lineEditSearch->text(), options, i));
+        //treeView->findChild()
+        //searchResults.append(treeWidget->findItems(ui->lineEditSearch->text(), options, i));
     }
     if(!searchResults.empty())
-        treeWidget->setCurrentItem(searchResults.at(currentPosition));
+        treeView->setCurrentIndex(searchResults.at(currentPosition));
     setEnableButtons(!searchResults.empty());
 }
 
@@ -82,7 +82,7 @@ void SearchDialog::next(){
     if(searchResults.empty())
         return;
     currentPosition = currentPosition + 1 % searchResults.size();
-    treeWidget->setCurrentItem(searchResults.at(currentPosition));
+    treeView->setCurrentIndex(searchResults.at(currentPosition));
 }
 
 /**
@@ -92,7 +92,7 @@ void SearchDialog::prev(){
     if(searchResults.empty())
         return;
     currentPosition = currentPosition - 1 < 0 ? 0 : currentPosition - 1;
-    treeWidget->setCurrentItem(searchResults.at(currentPosition));
+    treeView->setCurrentIndex(searchResults.at(currentPosition));
 }
 
 
