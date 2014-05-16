@@ -5,7 +5,6 @@
 
 ReqModel::ReqModel(QObject *parent) : QAbstractItemModel(parent){
     QList<QVariant> rootData;
-    rootData << "Title" << "Summary";
     QList<QString> ref;
     rootItem = new TreeItem("", rootData, ref);
 }
@@ -25,12 +24,34 @@ QVariant ReqModel::data(const QModelIndex &index, int role) const{
     if (!index.isValid())
         return QVariant();
 
-    if (role != Qt::DisplayRole)
+    if (role != Qt::DisplayRole && role != Qt::EditRole)
         return QVariant();
 
     TreeItem *item = static_cast<TreeItem*>(index.internalPointer());
 
     return item->data(index.column());
+}
+
+bool ReqModel::setData(const QModelIndex &index, const QVariant &value, int role) {
+    if (role != Qt::EditRole)
+        return false;
+
+    TreeItem *item = getItem(index);
+    bool result = item->setData(index.column(), value);
+
+    if (result)
+        emit dataChanged(index, index);
+
+    return result;
+}
+
+TreeItem *ReqModel::getItem(const QModelIndex &index) const
+{
+    if (index.isValid()) {
+        TreeItem *item = static_cast<TreeItem*>(index.internalPointer());
+        if (item) return item;
+    }
+    return rootItem;
 }
 
 Qt::ItemFlags ReqModel::flags(const QModelIndex &index) const{

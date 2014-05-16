@@ -13,7 +13,11 @@ HEADERS       = domparser.h \
     rifparser.h \
     reqmodel.h \
     treeitem.h \
-    parser.h
+    parser.h \
+    intdelegate.h \
+    enumdelegate.h \
+    datatype.h \
+    reqifbaseelement.h
 SOURCES       = domparser.cpp \
                 main.cpp \
     specobject.cpp \
@@ -26,7 +30,11 @@ SOURCES       = domparser.cpp \
     rifparser.cpp \
     reqmodel.cpp \
     treeitem.cpp \
-    parser.cpp
+    parser.cpp \
+    intdelegate.cpp \
+    enumdelegate.cpp \
+    datatype.cpp \
+    reqifbaseelement.cpp
 
 FORMS += \
     mainwindow.ui \

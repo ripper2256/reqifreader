@@ -33,6 +33,7 @@ public:
     bool parseStructure(QDomDocument &document, QString &pathToXmlFile);
 
 private:
+    void setDelegates();
     void parseReqIfXmlFile(const QDomElement &element);
     void parseCoreContent(const QDomNode &element);
     void parseSpecObjects(const QDomNode &element);
@@ -48,6 +49,11 @@ private:
     QString textAttribut;
     static const QString REQIF_TEXT;
     static const QString REQIF_CHAPTER_NAME;
+    static const QString REQIF_HTML_TYPE;
+    static const QString REQIF_STRING_TYPE;
+    static const QString REQIF_INT_TYPE;
+    static const QString REQIF_ENUM_TYPE;
+    static const QString REQIF_REAL_TYPE;
 };
 
 #endif

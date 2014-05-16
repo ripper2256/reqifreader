@@ -19,6 +19,8 @@
 
 #include <QPainter>
 #include <QTextDocument>
+#include <QTextEdit>
+#include <QDebug>
 #include <QAbstractTextDocumentLayout>
 
 /**
@@ -35,7 +37,6 @@ void HTMLDelegate::paint(QPainter* painter, const QStyleOptionViewItem & option,
 
     QTextDocument doc;
     doc.setHtml(options.text);
-
     options.text = "";
     options.widget->style()->drawControl(QStyle::CE_ItemViewItem, &options, painter);
 
@@ -46,6 +47,44 @@ void HTMLDelegate::paint(QPainter* painter, const QStyleOptionViewItem & option,
 
     painter->restore();
 }
+
+QWidget * HTMLDelegate::createEditor(QWidget *parent, const QStyleOptionViewItem &option, const QModelIndex &index) const{
+    QTextEdit *te = new QTextEdit(parent);
+    //te->setFixedHeight(maxHeight+maxHeight/8);
+    //te->document()->setDocumentMargin(0);
+    //te->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+    //te->setText(options.text);
+    //te->setHtml(options.text);
+
+    return(te);
+}
+
+void HTMLDelegate::setEditorData(QWidget *editor, const QModelIndex &index) const {
+    QVariant data = index.model()->data(index, Qt::DisplayRole);
+
+    QTextEdit *te = static_cast<QTextEdit*>(editor);
+    te->setHtml(data.toString());
+    //qDebug() << foo.toString();
+    //QSpinBox *spinBox = static_cast<QSpinBox*>(editor);
+    //spinBox->setValue(value);
+}
+
+
+void HTMLDelegate::setModelData(QWidget *editor, QAbstractItemModel *model, const QModelIndex &index) const {
+    QTextEdit *te = static_cast<QTextEdit*>(editor);
+    //spinBox->interpretText();
+
+    //int value = spinBox->value();
+    QString value = te->toHtml();
+    qDebug() << value;
+    model->setData(index, value, Qt::EditRole);
+    qDebug() << model->data(index, Qt::DisplayRole);
+}
+
+void HTMLDelegate::updateEditorGeometry(QWidget *editor, const QStyleOptionViewItem &option, const QModelIndex &/* index */) const{
+    editor->setGeometry(option.rect);
+}
+
 /**
  * @brief HTMLDelegate::sizeHint
  * @param option

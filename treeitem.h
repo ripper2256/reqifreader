@@ -19,6 +19,7 @@
      int row() const;
      TreeItem *parent();
      void setData(const QList<QVariant> &data);
+     bool setData(int column, const QVariant &value);
 
  private:
      QList<TreeItem*> childItems;

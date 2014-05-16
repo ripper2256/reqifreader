@@ -22,12 +22,18 @@
 #include <QHeaderView>
 #include "domparser.h"
 #include "htmldelegate.h"
+#include "intdelegate.h"
 #include "spectype.h"
 #include "treeitem.h"
-
+#include "enumdelegate.h"
 
 const QString DomParser::REQIF_CHAPTER_NAME = "ReqIF.ChapterName";
 const QString DomParser::REQIF_TEXT = "ReqIF.Text";
+const QString DomParser::REQIF_HTML_TYPE = "ATTRIBUTE-DEFINITION-XHTML";
+const QString DomParser::REQIF_ENUM_TYPE = "ATTRIBUTE-DEFINITION-ENUMERATION";
+const QString DomParser::REQIF_STRING_TYPE = "ATTRIBUTE-DEFINITION-STRING";
+const QString DomParser::REQIF_INT_TYPE = "ATTRIBUTE-DEFINITION-INTEGER";
+const QString DomParser::REQIF_REAL_TYPE = "ATTRIBUTE-DEFINITION-REAL";
 
 DomParser::DomParser(QTreeView *view, bool mergeTextAndChapter) : Parser(view, mergeTextAndChapter){
 }
@@ -111,14 +117,34 @@ void DomParser::parseCoreContent(const QDomNode &element){
             parseDatatypes(child.toElement());
         }
         if (child.toElement().tagName() == "SPECIFICATIONS"){
-            //creates a delegate for the treeview
-            HTMLDelegate* delegate = new HTMLDelegate();
-            treeView->setItemDelegate(delegate);
             parseSpecifications(child.toElement().firstChild());
             treeView->setModel(model);
             adjustHeaderSection();
+            setDelegates();
        }
         child = child.nextSibling();
+    }
+}
+
+
+void DomParser::setDelegates(){
+    int i = 0;
+    //creates delegates
+    foreach (SpecType spType, specTypeList) {
+        if (spType.getType() == REQIF_HTML_TYPE) {
+            HTMLDelegate* delegate = new HTMLDelegate();
+            treeView->setItemDelegateForColumn(i, delegate);
+        } else if (spType.getType() == REQIF_INT_TYPE) {
+            IntDelegate* delegate = new IntDelegate();
+            treeView->setItemDelegateForColumn(i, delegate);
+        } else if (spType.getType() == REQIF_ENUM_TYPE) {
+            QStringList list(enumValues.values());
+            EnumDelegate *delegate = new EnumDelegate(list);
+            treeView->setItemDelegateForColumn(i, delegate);
+        } else if (spType.getType() == REQIF_REAL_TYPE) {
+
+        }
+        i++;
     }
 }
 
@@ -134,7 +160,6 @@ void DomParser::adjustHeaderSection(){
     //doubles size of reqif.text column
     if(!textAttribut.isEmpty()){
         const int oldSize = treeView->header()->sectionSize(specAttributes.value(textAttribut));
-        qDebug() << specAttributes.value(textAttribut);
         treeView->header()->resizeSection(specAttributes.value(textAttribut), 2*oldSize);
     }
 }
@@ -189,6 +214,7 @@ void DomParser::parseSpecifications(const QDomNode &element, TreeItem *parent){
  */
 void DomParser::parseDatatypes(const QDomNode &element){
     QDomNode child = element.firstChild();
+    //TODO: datatypes einlesen
     while (!child.isNull()) {
         if (child.toElement().tagName() == "DATATYPE-DEFINITION-ENUMERATION"){
             QDomNode enumDatatype = child.firstChild().firstChild();
@@ -218,6 +244,7 @@ void DomParser::parseSpecTypes(const QDomNode &element){
                 if(longName == REQIF_CHAPTER_NAME){ //has reqif.chapterName
                     headingAttribut = attrDefElement.toElement().attribute("IDENTIFIER");
                 }
+                //TODO: save custom type
                 SpecType specType(reqifID, longName, attrDefElement.toElement().tagName(), "");
                 specTypeList.append(specType);
 

@@ -23,13 +23,14 @@ public:
     QModelIndex index(int row, int column,
                       const QModelIndex &parent = QModelIndex()) const;
     QModelIndex parent(const QModelIndex &index) const;
+    bool setData(const QModelIndex &index, const QVariant &value, int role);
     int rowCount(const QModelIndex &parent = QModelIndex()) const;
     int columnCount(const QModelIndex &parent = QModelIndex()) const;
     TreeItem *setupModelData(const QString &reqifID, const QList<QVariant> &columnData,const QList<QString> &refData, TreeItem *parent = 0);
     bool setHeaderData(const QStringList &headers);
 
 private:
-
+    TreeItem *getItem(const QModelIndex &index) const;
     TreeItem *rootItem;
 };
 
