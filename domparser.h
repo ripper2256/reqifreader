@@ -44,6 +44,8 @@ private:
     void parseSpecifications(const QDomNode &element, TreeItem *parent = 0);
     void replaceXhtmlObjects(const QDomNode &element);
     void adjustHeaderSection();
+    void parseEnumValues(const QDomNode & element, DataType *dataType);
+
     QString xmlPath;
     QString headingAttribut;
     QString textAttribut;

@@ -204,7 +204,8 @@ void RifParser::parseSpecTypes(const QDomNode &element){
                 if(longName == RIF_CHAPTER_NAME){ //has reqif.chapterName
                     headingAttribut = reqifID;
                 }
-                SpecType specType(reqifID, longName, attrDefElement.toElement().tagName(), "");
+                DataType dataType("abc","abc","abc",false);
+                SpecType specType(reqifID, longName, attrDefElement.toElement().tagName(), dataType, false);
                 specTypeList.append(specType);
 
                 attrDefElement = attrDefElement.nextSibling();

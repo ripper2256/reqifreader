@@ -6,6 +6,7 @@
 class ReqIfBaseElement
 {
 public:
+    ReqIfBaseElement();
     ReqIfBaseElement(const QString &reqifID, const QString &name);
     QString getIdentifier();
     QString getLongName();

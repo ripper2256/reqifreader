@@ -63,8 +63,9 @@ void HTMLDelegate::setEditorData(QWidget *editor, const QModelIndex &index) cons
     QVariant data = index.model()->data(index, Qt::DisplayRole);
 
     QTextEdit *te = static_cast<QTextEdit*>(editor);
+    //te->setHtml(data.toString());
     te->setHtml(data.toString());
-    //qDebug() << foo.toString();
+    //qDebug() << data.toString();
     //QSpinBox *spinBox = static_cast<QSpinBox*>(editor);
     //spinBox->setValue(value);
 }
@@ -76,9 +77,8 @@ void HTMLDelegate::setModelData(QWidget *editor, QAbstractItemModel *model, cons
 
     //int value = spinBox->value();
     QString value = te->toHtml();
-    qDebug() << value;
     model->setData(index, value, Qt::EditRole);
-    qDebug() << model->data(index, Qt::DisplayRole);
+    //qDebug() << model->data(index, Qt::DisplayRole);
 }
 
 void HTMLDelegate::updateEditorGeometry(QWidget *editor, const QStyleOptionViewItem &option, const QModelIndex &/* index */) const{

@@ -17,7 +17,8 @@ HEADERS       = domparser.h \
     intdelegate.h \
     enumdelegate.h \
     datatype.h \
-    reqifbaseelement.h
+    reqifbaseelement.h \
+    enumvalue.h
 SOURCES       = domparser.cpp \
                 main.cpp \
     specobject.cpp \
@@ -34,7 +35,8 @@ SOURCES       = domparser.cpp \
     intdelegate.cpp \
     enumdelegate.cpp \
     datatype.cpp \
-    reqifbaseelement.cpp
+    reqifbaseelement.cpp \
+    enumvalue.cpp
 
 FORMS += \
     mainwindow.ui \

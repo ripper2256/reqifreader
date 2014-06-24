@@ -20,12 +20,14 @@
 #include <QVBoxLayout>
 #include <QPushButton>
 #include <QHeaderView>
+#include <QString>
 #include "domparser.h"
 #include "htmldelegate.h"
 #include "intdelegate.h"
 #include "spectype.h"
 #include "treeitem.h"
 #include "enumdelegate.h"
+
 
 const QString DomParser::REQIF_CHAPTER_NAME = "ReqIF.ChapterName";
 const QString DomParser::REQIF_TEXT = "ReqIF.Text";
@@ -121,7 +123,7 @@ void DomParser::parseCoreContent(const QDomNode &element){
             treeView->setModel(model);
             adjustHeaderSection();
             setDelegates();
-       }
+        }
         child = child.nextSibling();
     }
 }
@@ -138,10 +140,16 @@ void DomParser::setDelegates(){
             IntDelegate* delegate = new IntDelegate();
             treeView->setItemDelegateForColumn(i, delegate);
         } else if (spType.getType() == REQIF_ENUM_TYPE) {
-            QStringList list(enumValues.values());
-            EnumDelegate *delegate = new EnumDelegate(list);
-            treeView->setItemDelegateForColumn(i, delegate);
+            if(spType.getMultiValued()){
+
+            }else{
+                QStringList list(spType.getDefinitionRef().getEnumValuesAsList());
+                EnumDelegate *delegate = new EnumDelegate(list);
+                treeView->setItemDelegateForColumn(i, delegate);
+            }
         } else if (spType.getType() == REQIF_REAL_TYPE) {
+
+        } else if(spType.getType() == REQIF_STRING_TYPE) {
 
         }
         i++;
@@ -214,16 +222,30 @@ void DomParser::parseSpecifications(const QDomNode &element, TreeItem *parent){
  */
 void DomParser::parseDatatypes(const QDomNode &element){
     QDomNode child = element.firstChild();
-    //TODO: datatypes einlesen
     while (!child.isNull()) {
         if (child.toElement().tagName() == "DATATYPE-DEFINITION-ENUMERATION"){
-            QDomNode enumDatatype = child.firstChild().firstChild();
-            while (!enumDatatype.isNull()) {
-                enumValues.insert(enumDatatype.toElement().attribute("IDENTIFIER"), enumDatatype.toElement().attribute("LONG-NAME"));
-                enumDatatype = enumDatatype.nextSibling();
-            }
-
+            DataType datatype(child.toElement().attribute("IDENTIFIER"),child.toElement().attribute("LONG-NAME"), child.toElement().tagName(), true);
+            parseEnumValues(child.firstChild(), &datatype);
+            dataTypeList.insert(datatype.getIdentifier(), datatype);
+        } else {
+            DataType datatype(child.toElement().attribute("IDENTIFIER"),child.toElement().attribute("LONG-NAME"), child.toElement().tagName(), false);
+            dataTypeList.insert(datatype.getIdentifier(), datatype);
         }
+
+        child = child.nextSibling();
+    }
+}
+
+void DomParser::parseEnumValues(const QDomNode & element, DataType *dataType) {
+    QDomNode child = element.firstChildElement("ENUM-VALUE");
+    while (!child.isNull()) {
+        QString longName = child.toElement().attribute("LONG-NAME");
+        QString reqifID = child.toElement().attribute("IDENTIFIER");
+        QString key = child.firstChild().firstChild().toElement().attribute("KEY");
+        QString otherContent = child.firstChild().firstChild().toElement().attribute("OTHER-CONTENT");
+        EnumValue enumValue(reqifID, longName, key, otherContent);
+        dataType->addEnumValue(reqifID, enumValue);
+        enumValuesList.insert(reqifID, enumValue);
         child = child.nextSibling();
     }
 }
@@ -238,14 +260,24 @@ void DomParser::parseSpecTypes(const QDomNode &element){
                 specAttributes.insert(reqifID, specAttributes.size());
                 QString longName = attrDefElement.toElement().attribute("LONG-NAME");
                 labels << longName;
+                QString multiValuedString = attrDefElement.toElement().attribute("MULTI-VALUED");
+                bool multiValued = false;
+                if(!multiValuedString .isEmpty()){
+                    if(QString::compare(multiValuedString,"true",Qt::CaseInsensitive) == 0){
+                        multiValued = true;
+                    }
+                }
+                //get datatype reference
+                QString typeRef = attrDefElement.firstChildElement("TYPE").firstChild().toElement().text();
+
                 if(longName == REQIF_TEXT){ //has reqif.text attribute
                     textAttribut = attrDefElement.toElement().attribute("IDENTIFIER");
                 }
                 if(longName == REQIF_CHAPTER_NAME){ //has reqif.chapterName
                     headingAttribut = attrDefElement.toElement().attribute("IDENTIFIER");
                 }
-                //TODO: save custom type
-                SpecType specType(reqifID, longName, attrDefElement.toElement().tagName(), "");
+
+                SpecType specType(reqifID, longName, attrDefElement.toElement().tagName(), dataTypeList.value(typeRef), multiValued);
                 specTypeList.append(specType);
 
                 attrDefElement = attrDefElement.nextSibling();
@@ -322,7 +354,8 @@ void DomParser::parseSpecObject(const QDomNode &element){
             QDomNode enumValueRef = child.firstChild().firstChild();
             QString enumAsString = "";
             while (!enumValueRef.isNull()) {
-                enumAsString += enumValues.value(enumValueRef.toElement().text());
+                EnumValue enumValue = enumValuesList.value(enumValueRef.toElement().text());
+                enumAsString += enumValue.getLongName();
                 enumValueRef = enumValueRef.nextSibling();
                 if(!enumValueRef.isNull())
                     enumAsString += "\n";

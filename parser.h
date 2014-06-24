@@ -5,6 +5,7 @@
 #include "spectype.h"
 #include "reqmodel.h"
 #include "datatype.h"
+#include "enumvalue.h"
 #include <QtXml>
 #include <QTreeView>
 
@@ -34,10 +35,11 @@ protected:
     QStringList labels;
     QHash<QString, int> specAttributes;
     QHash<QString, QString> enumValues;
+    QHash<QString, EnumValue> enumValuesList;
     QHash<QString, SpecObject> specObjectList;
+    QHash<QString, DataType> dataTypeList;
 
     QList <SpecType> specTypeList;
-    QList <DataType> dataTypeList;
     QDomDocument doc;
     bool mergeTextAndChapterName;
     //Header information

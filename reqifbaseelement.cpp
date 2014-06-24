@@ -1,5 +1,9 @@
 #include "reqifbaseelement.h"
 
+ReqIfBaseElement::ReqIfBaseElement(){
+
+}
+
 ReqIfBaseElement::ReqIfBaseElement(const QString &reqifID, const QString &name){
     identifier = reqifID;
     longName = name;
