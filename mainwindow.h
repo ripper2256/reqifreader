@@ -41,6 +41,7 @@ private slots:
     void open();
     void about();
     void info();
+    void save();
     void search();
     void switchView();
     void switchMerge();

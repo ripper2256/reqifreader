@@ -43,6 +43,10 @@ QList <SpecType> Parser::getSpecTypes(){
     return specTypeList;
 }
 
+QHash<QString, DataType> Parser::getDataTypes(){
+    return dataTypeList;
+}
+
 void Parser::setMerge(bool mergeTextAndChapter){
     mergeTextAndChapterName = mergeTextAndChapter;
 }

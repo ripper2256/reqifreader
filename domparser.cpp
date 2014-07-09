@@ -27,7 +27,8 @@
 #include "spectype.h"
 #include "treeitem.h"
 #include "enumdelegate.h"
-
+#include "datedelegate.h"
+#include "booldelegate.h"
 
 const QString DomParser::REQIF_CHAPTER_NAME = "ReqIF.ChapterName";
 const QString DomParser::REQIF_TEXT = "ReqIF.Text";
@@ -36,6 +37,8 @@ const QString DomParser::REQIF_ENUM_TYPE = "ATTRIBUTE-DEFINITION-ENUMERATION";
 const QString DomParser::REQIF_STRING_TYPE = "ATTRIBUTE-DEFINITION-STRING";
 const QString DomParser::REQIF_INT_TYPE = "ATTRIBUTE-DEFINITION-INTEGER";
 const QString DomParser::REQIF_REAL_TYPE = "ATTRIBUTE-DEFINITION-REAL";
+const QString DomParser::REQIF_DATE_TYPE = "ATTRIBUTE-DEFINITION-DATE";
+const QString DomParser::REQIF_BOOL_TYPE = "ATTRIBUTE-DEFINITION-BOOLEAN";
 
 DomParser::DomParser(QTreeView *view, bool mergeTextAndChapter) : Parser(view, mergeTextAndChapter){
 }
@@ -140,17 +143,22 @@ void DomParser::setDelegates(){
             IntDelegate* delegate = new IntDelegate();
             treeView->setItemDelegateForColumn(i, delegate);
         } else if (spType.getType() == REQIF_ENUM_TYPE) {
-            if(spType.getMultiValued()){
-
-            }else{
-                QStringList list(spType.getDefinitionRef().getEnumValuesAsList());
-                EnumDelegate *delegate = new EnumDelegate(list);
-                treeView->setItemDelegateForColumn(i, delegate);
-            }
+            QStringList list(spType.getDefinitionRef().getEnumValuesAsList());
+            EnumDelegate *delegate = new EnumDelegate(list);
+            treeView->setItemDelegateForColumn(i, delegate);
         } else if (spType.getType() == REQIF_REAL_TYPE) {
 
         } else if(spType.getType() == REQIF_STRING_TYPE) {
 
+        } else if(spType.getType() == REQIF_DATE_TYPE) {
+            DateDelegate* delegate = new DateDelegate();
+            treeView->setItemDelegateForColumn(i, delegate);
+        } else if(spType.getType() == REQIF_BOOL_TYPE) {
+            QStringList list;
+            list.append("true");
+            list.append("false");
+            EnumDelegate *delegate = new EnumDelegate(list);
+            treeView->setItemDelegateForColumn(i, delegate);
         }
         i++;
     }
@@ -193,7 +201,7 @@ void DomParser::parseSpecifications(const QDomNode &element, TreeItem *parent){
 
          QHash<QString, int>::iterator i;
          for (i = specAttributes.begin(); i != specAttributes.end(); ++i){
-             itemData[i.value()] = specObject.getAttributValue(i.key());
+             itemData[i.value()] = specObject.getAttributValue2(i.key());
              ref[i.value()] = i.key();
          }
 
@@ -229,6 +237,15 @@ void DomParser::parseDatatypes(const QDomNode &element){
             dataTypeList.insert(datatype.getIdentifier(), datatype);
         } else {
             DataType datatype(child.toElement().attribute("IDENTIFIER"),child.toElement().attribute("LONG-NAME"), child.toElement().tagName(), false);
+            if(child.toElement().hasAttribute("MAX")) {
+                datatype.setMax(child.toElement().attribute("MAX").toLongLong());
+            }
+            if(child.toElement().hasAttribute("MIN")) {
+                datatype.setMin(child.toElement().attribute("MIN").toLongLong());
+            }
+            if(child.toElement().hasAttribute("ACCURACY")) {
+                datatype.setAccuracy(child.toElement().attribute("MIN").toLongLong());
+            }
             dataTypeList.insert(datatype.getIdentifier(), datatype);
         }
 
@@ -282,6 +299,11 @@ void DomParser::parseSpecTypes(const QDomNode &element){
 
                 attrDefElement = attrDefElement.nextSibling();
             }
+        } else if(child.toElement().tagName() == "SPECIFICATION-TYPE"){
+            QString reqifID = child.toElement().attribute("IDENTIFIER");
+            QString longName = child.toElement().attribute("LONG-NAME");
+            ReqIfBaseElement specType(reqifID, longName);
+            specificationTypeList.append(specType);
         }
         child = child.nextSibling();
     }
@@ -335,8 +357,20 @@ void DomParser::parseSpecObject(const QDomNode &element){
     QString str;
     QTextStream stream(&str);
     while (!child.isNull()) {
-        if(child.toElement().hasAttribute("THE-VALUE")){ //parses simple attributs, e.g. real, int, etc.
-            specObject.addAttributValue(child.firstChildElement("DEFINITION").firstChild().toElement().text(),child.toElement().attribute("THE-VALUE"));
+        if(child.toElement().hasAttribute("THE-VALUE")){ //parses simple attributs, e.g. real, int, etc. 
+            QString theValue = child.toElement().attribute("THE-VALUE");
+            if(child.toElement().tagName() == "ATTRIBUTE-VALUE-BOOLEAN") {
+                bool value = QString::compare(theValue, "true",Qt::CaseInsensitive) == 0 ? true : false;
+                specObject.addAttributValue2(child.firstChildElement("DEFINITION").firstChild().toElement().text(), value);
+            } else if(child.toElement().tagName() == "ATTRIBUTE-VALUE-DATE") {
+                QDate value = QDate::fromString(theValue, Qt::ISODate);
+                specObject.addAttributValue2(child.firstChildElement("DEFINITION").firstChild().toElement().text(),value);
+            } else if(child.toElement().tagName() == "ATTRIBUTE-VALUE-INTEGER") {
+                int value = theValue.toInt();
+                specObject.addAttributValue2(child.firstChildElement("DEFINITION").firstChild().toElement().text(),value);
+            } else {
+                specObject.addAttributValue2(child.firstChildElement("DEFINITION").firstChild().toElement().text(),theValue);
+            }
         }
         if(child.toElement().tagName() == "ATTRIBUTE-VALUE-XHTML"){ //parses xhtml attributes
             QDomNode xhtml = child.firstChildElement("THE-VALUE");
@@ -347,20 +381,20 @@ void DomParser::parseSpecObject(const QDomNode &element){
             stream.flush();
             str.replace(QString("xhtml:"), QString(""));
 
-            specObject.addAttributValue(child.firstChildElement("DEFINITION").firstChild().toElement().text(), str);
+            specObject.addAttributValue2(child.firstChildElement("DEFINITION").firstChild().toElement().text(), str);
         }
 
         if(child.toElement().tagName() == "ATTRIBUTE-VALUE-ENUMERATION"){ //parses enum values
             QDomNode enumValueRef = child.firstChild().firstChild();
-            QString enumAsString = "";
+            QString enumReqifID = child.firstChildElement("DEFINITION").firstChild().toElement().text();
+            QStringList strList;
             while (!enumValueRef.isNull()) {
                 EnumValue enumValue = enumValuesList.value(enumValueRef.toElement().text());
-                enumAsString += enumValue.getLongName();
+                strList.append(enumValue.getLongName());
                 enumValueRef = enumValueRef.nextSibling();
-                if(!enumValueRef.isNull())
-                    enumAsString += "\n";
             }
-            specObject.addAttributValue(child.firstChildElement("DEFINITION").firstChild().toElement().text(), enumAsString);
+            specObject.addAttributValue2(enumReqifID, strList);
+            //specObject.addAttributValue2(enumReqifID, enumAsString);
         }
 
         child = child.nextSibling();

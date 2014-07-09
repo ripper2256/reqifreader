@@ -1,8 +1,13 @@
 #include "enumdelegate.h"
+#include "enumvalue.h"
 
 #include <QComboBox>
 #include <QTextDocument>
 #include <QPainter>
+#include <QDebug>
+
+#include <QListWidget>
+#include <QListWidgetItem>
 
 EnumDelegate::EnumDelegate(const QStringList & texts){
     values = texts;
@@ -11,11 +16,13 @@ EnumDelegate::EnumDelegate(const QStringList & texts){
 void EnumDelegate::paint(QPainter* painter, const QStyleOptionViewItem & option, const QModelIndex &index) const{
     QStyleOptionViewItemV4 options = option;
     initStyleOption(&options, index);
-
+    QVariant data = index.model()->data(index, Qt::DisplayRole);
+    QStringList str = data.toStringList();
     painter->save();
 
     QTextDocument doc;
-    doc.setHtml(options.text);
+    doc.setPlainText(str.join("\n"));
+
     options.text = "";
     options.widget->style()->drawControl(QStyle::CE_ItemViewItem, &options, painter);
 
@@ -28,36 +35,63 @@ void EnumDelegate::paint(QPainter* painter, const QStyleOptionViewItem & option,
 }
 
 QWidget * EnumDelegate::createEditor(QWidget *parent, const QStyleOptionViewItem &option, const QModelIndex &index) const{
-    QComboBox *cb = new QComboBox(parent);
-    cb->addItems(values);
-    //te->setFixedHeight(maxHeight+maxHeight/8);
-    //te->document()->setDocumentMargin(0);
-    //te->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
-    //te->setText(options.text);
-    //te->setHtml(options.text);
+    //QComboBox *cb = new QComboBox(parent);
+    //cb->addItems(values);
+    //return(cb);
+    QVariant data = index.model()->data(index, Qt::DisplayRole);
+    QStringList str = data.toStringList();
 
-    return(cb);
+    QListWidget *listWidget = new QListWidget(parent);
+
+    //listWidget->setSelectionBehavior();
+
+    QStringListIterator it(values);
+    while (it.hasNext()){
+        QString value = it.next();
+        QListWidgetItem *listItem = new QListWidgetItem(value,listWidget);
+        if(str.contains(value,Qt::CaseSensitive)){
+            listItem->setCheckState(Qt::Checked);
+        } else {
+            listItem->setCheckState(Qt::Unchecked);
+        }
+        listWidget->addItem(listItem);
+    }
+    return listWidget;
+
 }
 
 void EnumDelegate::setEditorData(QWidget *editor, const QModelIndex &index) const {
-    QVariant data = index.model()->data(index, Qt::DisplayRole);
+    //QVariant data = index.model()->data(index, Qt::DisplayRole);
+    //QStringList str = data.toStringList();
+    //QComboBox *te = static_cast<QComboBox*>(editor);
 
-    QComboBox *te = static_cast<QComboBox*>(editor);
-
-    //te->setHtml(data.toString());
-
-    //qDebug() << foo.toString();
-    //QSpinBox *spinBox = static_cast<QSpinBox*>(editor);
-    //spinBox->setValue(value);
+    /*QListWidget *listWidget = static_cast<QListWidget*>(editor);
+    for(int i=0;i<listWidget->count;i++){
+        QListWidgetItem *listItem = listWidget->item(i);
+        listItem->setCheckState(Qt::Checked);
+    }*/
+    /*QVariant data = index.model()->data(index, Qt::DisplayRole);
+    EnumValue enumValue = qvariant_cast<EnumValue>(data);
+    qDebug() << enumValue.getLongName();*/
 }
 
 
 void EnumDelegate::setModelData(QWidget *editor, QAbstractItemModel *model, const QModelIndex &index) const {
-    QComboBox *te = static_cast<QComboBox*>(editor);
-    //spinBox->interpretText();
+    QListWidget *listWidget = static_cast<QListWidget*>(editor);
+    QStringList str;
+    for(int i=0;i<listWidget->count();i++){
+        QListWidgetItem *listItem = listWidget->item(i);
+        if(listItem->checkState() == Qt::Checked){
+            str.append(listItem->text());
+        }
+    }
+    model->setData(index, str, Qt::EditRole);
+}
 
-    //int value = spinBox->value();
-    //QString value = te->toHtml();
-    //model->setData(index, value, Qt::EditRole);
-
+QSize EnumDelegate::sizeHint ( const QStyleOptionViewItem & option, const QModelIndex & index ) const{
+    QVariant data = index.model()->data(index, Qt::DisplayRole);
+    //QFont font = QApplication::font();
+    //qDebug() << option.;
+    //return QSize(doc.idealWidth(), doc.size().height());
+    return QSize(200,80);
 }

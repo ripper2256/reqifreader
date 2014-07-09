@@ -1,6 +1,5 @@
 #include "intdelegate.h"
 #include <limits>
-#include <QtDebug>
 
 IntDelegate::IntDelegate()
 {

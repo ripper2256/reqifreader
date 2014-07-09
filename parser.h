@@ -26,6 +26,8 @@ public:
     QString getReqIfVersion();
     QString getreqIfSourceTool();
     QList <SpecType> getSpecTypes();
+    QHash<QString, DataType> getDataTypes();
+
     void setListView(bool viewAsList);
     void setMerge(bool mergeTextAndChapter);
 
@@ -39,6 +41,7 @@ protected:
     QHash<QString, SpecObject> specObjectList;
     QHash<QString, DataType> dataTypeList;
 
+    QList<ReqIfBaseElement> specificationTypeList;
     QList <SpecType> specTypeList;
     QDomDocument doc;
     bool mergeTextAndChapterName;

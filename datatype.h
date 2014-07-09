@@ -15,7 +15,12 @@ public:
     QHash<QString, EnumValue> getEnumValues();
     QList<QString> getEnumValuesAsList();
     bool isEnum();
-
+    void setMin(long long minimum);
+    void setMax(long long maximum);
+    void setAccuracy(long long accuracy);
+    long long getAccuracy();
+    long long getMin();
+    long long getMax();
 
 private:
     bool enumDatatype;
@@ -23,6 +28,7 @@ private:
     QHash<QString, EnumValue> enumValuesList;
     long long max;
     long long min;
+    long long accuracy;
 };
 
 #endif // DATATYPE_H

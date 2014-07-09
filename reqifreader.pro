@@ -18,7 +18,10 @@ HEADERS       = domparser.h \
     enumdelegate.h \
     datatype.h \
     reqifbaseelement.h \
-    enumvalue.h
+    enumvalue.h \
+    datedelegate.h \
+    booldelegate.h \
+    reqifxmlwriter.h
 SOURCES       = domparser.cpp \
                 main.cpp \
     specobject.cpp \
@@ -36,7 +39,10 @@ SOURCES       = domparser.cpp \
     enumdelegate.cpp \
     datatype.cpp \
     reqifbaseelement.cpp \
-    enumvalue.cpp
+    enumvalue.cpp \
+    datedelegate.cpp \
+    booldelegate.cpp \
+    reqifxmlwriter.cpp
 
 FORMS += \
     mainwindow.ui \

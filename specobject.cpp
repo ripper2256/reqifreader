@@ -43,7 +43,7 @@ QString SpecObject::getReqifID(){
  * @brief SpecObject::~SpecObject
  */
 SpecObject::~SpecObject(){
-    attributeValues.clear();
+    attributeValuesString.clear();
 }
 
 /**
@@ -52,8 +52,17 @@ SpecObject::~SpecObject(){
  * @param value actual value
  */
 void SpecObject::addAttributValue(const QString &attrID, const QString &value){
+    attributeValuesString.insert(attrID, value);
+}
+
+void SpecObject::addAttributValue2(const QString &attrID, const QVariant &value){
     attributeValues.insert(attrID, value);
 }
+
+QVariant SpecObject::getAttributValue2(const QString &attrID){
+    return attributeValues.value(attrID);
+}
+
 
 /**
  * @brief SpecObject::getAttributValue gets the attribut value from
@@ -61,7 +70,7 @@ void SpecObject::addAttributValue(const QString &attrID, const QString &value){
  * @return
  */
 QString SpecObject::getAttributValue(const QString &attrID){
-    return attributeValues.value(attrID);
+    return attributeValuesString.value(attrID);
 }
 
 /**
@@ -70,11 +79,11 @@ QString SpecObject::getAttributValue(const QString &attrID){
  * @param headingID
  */
 void SpecObject::mergeTextAndHeading(const QString &txtID, const QString &headingID){
-    QString txt = attributeValues.value(txtID);
-    QString heading = attributeValues.value(headingID);
+    QString txt = attributeValuesString.value(txtID);
+    QString heading = attributeValuesString.value(headingID);
     heading = "<h2>"+heading+"</h2>";
     heading.append(txt);
-    attributeValues.insert(txtID, heading);
+    attributeValuesString.insert(txtID, heading);
 }
 
 

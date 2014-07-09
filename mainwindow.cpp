@@ -18,6 +18,7 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 #include "infodialog.h"
+#include "reqifxmlwriter.h"
 #include <QFileDialog>
 #include <QMessageBox>
 #include <QErrorMessage>
@@ -36,6 +37,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
     connect(ui->actionAbout, SIGNAL(triggered()), this, SLOT(about()));
     connect(ui->actionOpen, SIGNAL(triggered()), this, SLOT(open()));
     connect(ui->actionInfo, SIGNAL(triggered()), this, SLOT(info()));
+    connect(ui->actionSave, SIGNAL(triggered()), this, SLOT(save()));
     connect(ui->actionSearch, SIGNAL(triggered()), this, SLOT(search()));
     connect(ui->actionList_View, SIGNAL(triggered()), this, SLOT(switchView()));
     connect(ui->actionMerge, SIGNAL(triggered()), this, SLOT(switchMerge()));
@@ -113,6 +115,13 @@ void MainWindow::info(){
         InfoDialog dialog(this, parser->getTitle(), parser->getreqIfSourceTool(), parser->getCreationTime());
         dialog.exec();
     }
+}
+
+void MainWindow::save(){
+    ReqIfXMLWriter xmlWriter;
+    QHash<QString, DataType> dataTypeList = parser->getDataTypes();
+
+    xmlWriter.writeDatatype(dataTypeList);
 }
 
 void MainWindow::switchView(){

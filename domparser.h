@@ -56,6 +56,8 @@ private:
     static const QString REQIF_INT_TYPE;
     static const QString REQIF_ENUM_TYPE;
     static const QString REQIF_REAL_TYPE;
+    static const QString REQIF_DATE_TYPE;
+    static const QString REQIF_BOOL_TYPE;
 };
 
 #endif
