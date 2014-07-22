@@ -42,6 +42,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
     connect(ui->actionList_View, SIGNAL(triggered()), this, SLOT(switchView()));
     connect(ui->actionMerge, SIGNAL(triggered()), this, SLOT(switchMerge()));
     connect(ui->actionSpecTypes_Overview, SIGNAL(triggered()), this, SLOT(showSpecTypes()));
+    connect(ui->navigation, SIGNAL(clicked(const QModelIndex&)),this, SLOT(getSelectedElement(const QModelIndex&)));
 
     listView = false;
     mergeTextAndChapter = true;
@@ -101,6 +102,15 @@ void MainWindow::openXmlFile(){
         QString xmlPath = fileInfo.path();
 
         parser->parseStructure(doc, xmlPath);
+        ReqModel *model = parser->getReqModel();
+        ui->navigation->setModel(model);
+
+        int rows = model->rowCount();
+
+        for (int i = 1; i < rows; ++i) {
+            ui->navigation->setColumnHidden(i, true);
+        }
+
         setWindowTitle(fileInfo.fileName() +tr(" - ReqIF Reader"));
         doc.clear();
         file.close();
@@ -159,8 +169,9 @@ void MainWindow::showSpecTypes(){
     specTypeOverview->show();
     specTypeOverview->raise();
     specTypeOverview->activateWindow();
-    if (parser)
+    if (parser) {
         specTypeOverview->setSpecTypeList(parser->getSpecTypes());
+    }
 }
 
 /**
@@ -178,6 +189,10 @@ void MainWindow::about(){
                "<p>See the GNU General Public License for more details. "
                "<p> You should have received a copy of the GNU General Public License along with this "
                "program; if not, write to the Free Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA."));
+}
+
+void MainWindow::getSelectedElement(const QModelIndex &index){
+    ui->treeView->setCurrentIndex(index);
 }
 
 void MainWindow::onCustomContextMenuRequested(const QPoint& pos) {

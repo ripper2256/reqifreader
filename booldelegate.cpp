@@ -5,8 +5,9 @@
 #include <QDebug>
 
 
-BoolDelegate::BoolDelegate()
-{
+BoolDelegate::BoolDelegate(){
+    values.append("true");
+    values.append("false");
 }
 
 
@@ -18,6 +19,7 @@ void BoolDelegate::paint(QPainter* painter, const QStyleOptionViewItem & option,
 
     QTextDocument doc;
     doc.setHtml(options.text);
+
     options.text = "";
     options.widget->style()->drawControl(QStyle::CE_ItemViewItem, &options, painter);
 
@@ -38,12 +40,15 @@ QWidget * BoolDelegate::createEditor(QWidget *parent, const QStyleOptionViewItem
 
 void BoolDelegate::setEditorData(QWidget *editor, const QModelIndex &index) const {
     QVariant data = index.model()->data(index, Qt::DisplayRole);
-
     QComboBox *te = static_cast<QComboBox*>(editor);
+    bool qData = data.toBool();
+    te->setCurrentIndex(qData ? 0 : 1);
 }
 
 
 void BoolDelegate::setModelData(QWidget *editor, QAbstractItemModel *model, const QModelIndex &index) const {
     QComboBox *te = static_cast<QComboBox*>(editor);
-    model->setData(index, te->currentText(), Qt::EditRole);
+    bool data = te->currentText() == "true" ? true : false;
+
+    model->setData(index, data, Qt::EditRole);
 }

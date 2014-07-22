@@ -50,3 +50,7 @@ QHash<QString, DataType> Parser::getDataTypes(){
 void Parser::setMerge(bool mergeTextAndChapter){
     mergeTextAndChapterName = mergeTextAndChapter;
 }
+
+ReqModel * Parser::getReqModel() {
+    return model;
+}

@@ -21,6 +21,9 @@
        <enum>QLayout::SetNoConstraint</enum>
       </property>
       <item>
+       <widget class="QTreeView" name="navigation"/>
+      </item>
+      <item>
        <widget class="QTreeView" name="treeView"/>
       </item>
      </layout>

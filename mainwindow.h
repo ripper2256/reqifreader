@@ -48,6 +48,7 @@ private slots:
     void showSpecTypes();
     void showContextMenu(QTreeWidgetItem* item, const QPoint& globalPos);
     void onCustomContextMenuRequested(const QPoint& pos);
+    void getSelectedElement(const QModelIndex &index);
 
 private:
     void openXmlFile();

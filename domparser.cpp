@@ -154,10 +154,7 @@ void DomParser::setDelegates(){
             DateDelegate* delegate = new DateDelegate();
             treeView->setItemDelegateForColumn(i, delegate);
         } else if(spType.getType() == REQIF_BOOL_TYPE) {
-            QStringList list;
-            list.append("true");
-            list.append("false");
-            EnumDelegate *delegate = new EnumDelegate(list);
+            BoolDelegate *delegate = new BoolDelegate();
             treeView->setItemDelegateForColumn(i, delegate);
         }
         i++;

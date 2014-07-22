@@ -27,6 +27,7 @@ public:
     QString getreqIfSourceTool();
     QList <SpecType> getSpecTypes();
     QHash<QString, DataType> getDataTypes();
+    ReqModel * getReqModel();
 
     void setListView(bool viewAsList);
     void setMerge(bool mergeTextAndChapter);
