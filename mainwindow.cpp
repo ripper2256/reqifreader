@@ -43,6 +43,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
     connect(ui->actionMerge, SIGNAL(triggered()), this, SLOT(switchMerge()));
     connect(ui->actionSpecTypes_Overview, SIGNAL(triggered()), this, SLOT(showSpecTypes()));
     connect(ui->navigation, SIGNAL(clicked(const QModelIndex&)),this, SLOT(getSelectedElement(const QModelIndex&)));
+    connect(ui->treeView, SIGNAL(clicked(const QModelIndex&)),this, SLOT(getSelectedElement(const QModelIndex&)));
 
     listView = false;
     mergeTextAndChapter = true;
@@ -105,11 +106,13 @@ void MainWindow::openXmlFile(){
         ReqModel *model = parser->getReqModel();
         ui->navigation->setModel(model);
 
-        int rows = model->rowCount();
+        int columns = model->columnCount();
 
-        for (int i = 1; i < rows; ++i) {
+        for (int i = 1; i < columns; ++i) {
             ui->navigation->setColumnHidden(i, true);
         }
+        HTMLDelegate* delegate = new HTMLDelegate();
+        ui->navigation->setItemDelegateForColumn(0, delegate);
 
         setWindowTitle(fileInfo.fileName() +tr(" - ReqIF Reader"));
         doc.clear();
@@ -193,6 +196,7 @@ void MainWindow::about(){
 
 void MainWindow::getSelectedElement(const QModelIndex &index){
     ui->treeView->setCurrentIndex(index);
+    ui->navigation->setCurrentIndex(index);
 }
 
 void MainWindow::onCustomContextMenuRequested(const QPoint& pos) {

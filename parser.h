@@ -33,6 +33,9 @@ public:
     void setMerge(bool mergeTextAndChapter);
 
 protected:
+    int sortCritieria(const QString &longName);
+    void sortSpecTypes(int position);
+
     QTreeView *treeView;
     ReqModel *model;
     QStringList labels;

@@ -195,9 +195,7 @@ void RifParser::parseSpecTypes(const QDomNode &element){
             QDomNode attrDefElement = child.firstChildElement("SPEC-ATTRIBUTES").firstChild();
             while (!attrDefElement.isNull()) {
                 QString reqifID = attrDefElement.firstChildElement("IDENTIFIER").text();
-                specAttributes.insert(reqifID, specAttributes.size());
                 QString longName = attrDefElement.firstChildElement("LONG-NAME").text();
-                labels << longName;
                 if(longName == RIF_TEXT){ //has reqif.text attribute
                     textAttribut = reqifID;
                 }
@@ -213,6 +211,23 @@ void RifParser::parseSpecTypes(const QDomNode &element){
         }
         child = child.nextSibling();
     }
+
+
+    int position = -1;
+    QStringList rifFields;
+    rifFields << "Object Heading";
+    rifFields << "Object Identifier";
+    rifFields << "Object Short Text";
+
+    foreach (const QString &str, rifFields) {
+        position = sortCritieria(str);
+        if(position != -1) {
+            break;
+        }
+    }
+
+    sortSpecTypes(position);
+
     model->setHeaderData(labels);
 }
 

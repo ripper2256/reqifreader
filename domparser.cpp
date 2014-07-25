@@ -32,6 +32,7 @@
 
 const QString DomParser::REQIF_CHAPTER_NAME = "ReqIF.ChapterName";
 const QString DomParser::REQIF_TEXT = "ReqIF.Text";
+
 const QString DomParser::REQIF_HTML_TYPE = "ATTRIBUTE-DEFINITION-XHTML";
 const QString DomParser::REQIF_ENUM_TYPE = "ATTRIBUTE-DEFINITION-ENUMERATION";
 const QString DomParser::REQIF_STRING_TYPE = "ATTRIBUTE-DEFINITION-STRING";
@@ -133,31 +134,30 @@ void DomParser::parseCoreContent(const QDomNode &element){
 
 
 void DomParser::setDelegates(){
-    int i = 0;
     //creates delegates
     foreach (SpecType spType, specTypeList) {
+        int headerPosition = specAttributes.value(spType.getIdentifier());
         if (spType.getType() == REQIF_HTML_TYPE) {
             HTMLDelegate* delegate = new HTMLDelegate();
-            treeView->setItemDelegateForColumn(i, delegate);
+            treeView->setItemDelegateForColumn(headerPosition, delegate);
         } else if (spType.getType() == REQIF_INT_TYPE) {
             IntDelegate* delegate = new IntDelegate();
-            treeView->setItemDelegateForColumn(i, delegate);
+            treeView->setItemDelegateForColumn(headerPosition, delegate);
         } else if (spType.getType() == REQIF_ENUM_TYPE) {
             QStringList list(spType.getDefinitionRef().getEnumValuesAsList());
             EnumDelegate *delegate = new EnumDelegate(list);
-            treeView->setItemDelegateForColumn(i, delegate);
+            treeView->setItemDelegateForColumn(headerPosition, delegate);
         } else if (spType.getType() == REQIF_REAL_TYPE) {
 
         } else if(spType.getType() == REQIF_STRING_TYPE) {
 
         } else if(spType.getType() == REQIF_DATE_TYPE) {
             DateDelegate* delegate = new DateDelegate();
-            treeView->setItemDelegateForColumn(i, delegate);
+            treeView->setItemDelegateForColumn(headerPosition, delegate);
         } else if(spType.getType() == REQIF_BOOL_TYPE) {
             BoolDelegate *delegate = new BoolDelegate();
-            treeView->setItemDelegateForColumn(i, delegate);
+            treeView->setItemDelegateForColumn(headerPosition, delegate);
         }
-        i++;
     }
 }
 
@@ -271,9 +271,8 @@ void DomParser::parseSpecTypes(const QDomNode &element){
             QDomNode attrDefElement = child.firstChild().firstChild();
             while (!attrDefElement.isNull()) {
                 QString reqifID = attrDefElement.toElement().attribute("IDENTIFIER");
-                specAttributes.insert(reqifID, specAttributes.size());
                 QString longName = attrDefElement.toElement().attribute("LONG-NAME");
-                labels << longName;
+
                 QString multiValuedString = attrDefElement.toElement().attribute("MULTI-VALUED");
                 bool multiValued = false;
                 if(!multiValuedString .isEmpty()){
@@ -304,9 +303,28 @@ void DomParser::parseSpecTypes(const QDomNode &element){
         }
         child = child.nextSibling();
     }
+
+    int position = -1;
+    QStringList reqIfFields;
+    reqIfFields << "ReqIF.ChapterName";
+    reqIfFields << "ReqIF.ForeignID";
+    reqIfFields << "ReqIF.Name";
+    reqIfFields << "ReqIF.Text";
+
+    foreach (const QString &str, reqIfFields) {
+        position = sortCritieria(str);
+        if(position != -1) {
+            break;
+        }
+    }
+
+    sortSpecTypes(position);
+
     model->setHeaderData(labels);
 
 }
+
+
 
 void DomParser::parseSpecObjects(const QDomNode &element){
     QDomNode child = element.firstChild();
