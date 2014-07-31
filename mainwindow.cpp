@@ -80,6 +80,7 @@ void MainWindow::openXmlFile(){
 
         if(parser != NULL){
             parser->clear();
+
         }
 
         if (!doc.setContent(&file, false, &errorStr, &errorLine, &errorColumn)) {
@@ -105,6 +106,7 @@ void MainWindow::openXmlFile(){
         parser->parseStructure(doc, xmlPath);
         ReqModel *model = parser->getReqModel();
         ui->navigation->setModel(model);
+        //ui->navigation->setStyleSheet("border: 1px solid white");
 
         int columns = model->columnCount();
 

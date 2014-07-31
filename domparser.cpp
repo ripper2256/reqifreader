@@ -45,6 +45,8 @@ DomParser::DomParser(QTreeView *view, bool mergeTextAndChapter) : Parser(view, m
 }
 
 DomParser::~DomParser(){
+    textAttribut.clear();
+    headingAttribut.clear();
     clear();
 }
 
@@ -57,6 +59,7 @@ bool DomParser::parseStructure(QDomDocument &document, QString &pathToXmlFile){
         return false;
     }
     xmlPath = pathToXmlFile;
+    treeView->header()->reset();
     parseReqIfXmlFile(root);
     specAttributes.clear();
     enumValues.clear();
@@ -162,19 +165,20 @@ void DomParser::setDelegates(){
 }
 
 void DomParser::adjustHeaderSection(){
+    //doubles size of reqif.text column
+    if(!textAttribut.isEmpty()){
+        const int oldSize = treeView->header()->sectionSize(specAttributes.value(textAttribut));
+        treeView->header()->resizeSection(specAttributes.value(textAttribut), 4*oldSize);
+    }
+
     //if text and chaptername exist and should be merged
     if(mergeTextAndChapterName && labels.contains(REQIF_TEXT) && labels.contains(REQIF_CHAPTER_NAME)){
-        treeView->header()->hideSection(specAttributes.value(headingAttribut));
+        //treeView->header()->hideSection(specAttributes.value(headingAttribut));
     } else {
         headingAttribut.clear();
         textAttribut.clear();
     }
 
-    //doubles size of reqif.text column
-    if(!textAttribut.isEmpty()){
-        const int oldSize = treeView->header()->sectionSize(specAttributes.value(textAttribut));
-        treeView->header()->resizeSection(specAttributes.value(textAttribut), 2*oldSize);
-    }
 }
 
 /**
@@ -284,10 +288,10 @@ void DomParser::parseSpecTypes(const QDomNode &element){
                 QString typeRef = attrDefElement.firstChildElement("TYPE").firstChild().toElement().text();
 
                 if(longName == REQIF_TEXT){ //has reqif.text attribute
-                    textAttribut = attrDefElement.toElement().attribute("IDENTIFIER");
+                    textAttribut = reqifID;
                 }
                 if(longName == REQIF_CHAPTER_NAME){ //has reqif.chapterName
-                    headingAttribut = attrDefElement.toElement().attribute("IDENTIFIER");
+                    headingAttribut = reqifID;
                 }
 
                 SpecType specType(reqifID, longName, attrDefElement.toElement().tagName(), dataTypeList.value(typeRef), multiValued);

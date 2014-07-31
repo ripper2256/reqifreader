@@ -36,9 +36,10 @@ void HTMLDelegate::paint(QPainter* painter, const QStyleOptionViewItem & option,
     painter->save();
 
     QTextDocument doc;
+    doc.setDefaultFont(options.font);
     doc.setHtml(options.text);
     options.text = "";
-    options.widget->style()->drawControl(QStyle::CE_ItemViewItem, &options, painter);
+    options.widget->style()->drawControl(QStyle::CE_ItemViewItem, &options, painter, options.widget);
 
     painter->translate(options.rect.left(), options.rect.top());
     QRect clip(0, 0, options.rect.width(), options.rect.height());
@@ -96,6 +97,7 @@ QSize HTMLDelegate::sizeHint ( const QStyleOptionViewItem & option, const QModel
     initStyleOption(&options, index);
 
     QTextDocument doc;
+    doc.setDefaultFont(options.font);
     doc.setHtml(options.text);
     doc.setTextWidth(options.rect.width());
     return QSize(doc.idealWidth(), doc.size().height());

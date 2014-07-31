@@ -49,6 +49,9 @@
            <verstretch>0</verstretch>
           </sizepolicy>
          </property>
+         <attribute name="headerCascadingSectionResizes">
+          <bool>false</bool>
+         </attribute>
         </widget>
         <widget class="QWidget" name="horizontalLayoutWidget">
          <layout class="QHBoxLayout" name="horizontalLayout"/>
@@ -65,7 +68,7 @@
      <x>0</x>
      <y>0</y>
      <width>585</width>
-     <height>21</height>
+     <height>26</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">

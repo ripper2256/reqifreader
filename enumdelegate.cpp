@@ -21,10 +21,11 @@ void EnumDelegate::paint(QPainter* painter, const QStyleOptionViewItem & option,
     painter->save();
 
     QTextDocument doc;
+    doc.setDefaultFont(options.font);
     doc.setPlainText(str.join("\n"));
 
     options.text = "";
-    options.widget->style()->drawControl(QStyle::CE_ItemViewItem, &options, painter);
+    options.widget->style()->drawControl(QStyle::CE_ItemViewItem, &options, painter, options.widget);
 
     painter->translate(options.rect.left(), options.rect.top());
     QRect clip(0, 0, options.rect.width(), options.rect.height());
@@ -32,6 +33,7 @@ void EnumDelegate::paint(QPainter* painter, const QStyleOptionViewItem & option,
     doc.drawContents(painter, clip);
 
     painter->restore();
+
 }
 
 QWidget * EnumDelegate::createEditor(QWidget *parent, const QStyleOptionViewItem &option, const QModelIndex &index) const{
@@ -89,9 +91,15 @@ void EnumDelegate::setModelData(QWidget *editor, QAbstractItemModel *model, cons
 }
 
 QSize EnumDelegate::sizeHint ( const QStyleOptionViewItem & option, const QModelIndex & index ) const{
+    QStyleOptionViewItemV4 options = option;
+    initStyleOption(&options, index);
+
     QVariant data = index.model()->data(index, Qt::DisplayRole);
-    //QFont font = QApplication::font();
-    //qDebug() << option.;
-    //return QSize(doc.idealWidth(), doc.size().height());
-    return QSize(200,80);
+    QStringList str = data.toStringList();
+
+    QTextDocument doc;
+    doc.setDefaultFont(options.font);
+    doc.setPlainText(str.join("\n"));
+    doc.setTextWidth(options.rect.width());
+    return QSize(doc.idealWidth(), doc.size().height());
 }

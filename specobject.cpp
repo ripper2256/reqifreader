@@ -79,11 +79,11 @@ QString SpecObject::getAttributValue(const QString &attrID){
  * @param headingID
  */
 void SpecObject::mergeTextAndHeading(const QString &txtID, const QString &headingID){
-    QString txt = attributeValuesString.value(txtID);
-    QString heading = attributeValuesString.value(headingID);
+    QString txt = attributeValues.value(txtID).toString();
+    QString heading = attributeValues.value(headingID).toString();
     heading = "<h2>"+heading+"</h2>";
     heading.append(txt);
-    attributeValuesString.insert(txtID, heading);
+    attributeValues.insert(txtID, heading);
 }
 
 

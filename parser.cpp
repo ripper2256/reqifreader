@@ -17,6 +17,10 @@ void Parser::clear(){
     specObjectList.clear();
     specTypeList.clear();
     doc.clear();
+    enumValuesList.clear();
+    dataTypeList.clear();
+    specificationTypeList.clear();
+    delete model;
 }
 
 void Parser::sortSpecTypes(int position) {
