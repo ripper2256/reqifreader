@@ -29,7 +29,7 @@ class InfoDialog : public QDialog
     Q_OBJECT
     
 public:
-    explicit InfoDialog(QWidget *parent = 0, const QString &title = "", const QString &sourceTool = "", const QString &creaTime = "");
+    explicit InfoDialog(QWidget *parent = 0, const QString &title = "", const QString &sourceTool = "", const QString &creaTime = "", const QString &toolId= "");
     ~InfoDialog();
     
 private:

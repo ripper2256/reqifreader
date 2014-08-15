@@ -16,7 +16,8 @@
 */
 
 #include "specobject.h"
-
+#include <QRegExp>
+#include <QDebug>
 /**
  * @brief SpecObject::SpecObject this constructor should not be used, it is just nesessary for list operations
  */
@@ -81,6 +82,7 @@ QString SpecObject::getAttributValue(const QString &attrID){
 void SpecObject::mergeTextAndHeading(const QString &txtID, const QString &headingID){
     QString txt = attributeValues.value(txtID).toString();
     QString heading = attributeValues.value(headingID).toString();
+    heading.remove(QRegExp("<[^>]*>"));
     heading = "<h2>"+heading+"</h2>";
     heading.append(txt);
     attributeValues.insert(txtID, heading);

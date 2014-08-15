@@ -1,3 +1,20 @@
+/*
+ * This file is part of the ReqIf Reader.
+ *
+ *  ReqIf Reader is free software: you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation, either version 3 of the License, or
+ *  (at your option) any later version.
+ *
+ *  ReqIf Reader is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License
+ *  along with ReqIf Reader.  If not, see <http://www.gnu.org/licenses/>.
+*/
+
 #include "enumdelegate.h"
 #include "enumvalue.h"
 
@@ -36,7 +53,7 @@ void EnumDelegate::paint(QPainter* painter, const QStyleOptionViewItem & option,
 
 }
 
-QWidget * EnumDelegate::createEditor(QWidget *parent, const QStyleOptionViewItem &option, const QModelIndex &index) const{
+QWidget * EnumDelegate::createEditor(QWidget *parent, const QStyleOptionViewItem , const QModelIndex &index) const{
     //QComboBox *cb = new QComboBox(parent);
     //cb->addItems(values);
     //return(cb);
@@ -62,7 +79,7 @@ QWidget * EnumDelegate::createEditor(QWidget *parent, const QStyleOptionViewItem
 
 }
 
-void EnumDelegate::setEditorData(QWidget *editor, const QModelIndex &index) const {
+//void EnumDelegate::setEditorData(QWidget *editor, const QModelIndex &index) const {
     //QVariant data = index.model()->data(index, Qt::DisplayRole);
     //QStringList str = data.toStringList();
     //QComboBox *te = static_cast<QComboBox*>(editor);
@@ -75,7 +92,7 @@ void EnumDelegate::setEditorData(QWidget *editor, const QModelIndex &index) cons
     /*QVariant data = index.model()->data(index, Qt::DisplayRole);
     EnumValue enumValue = qvariant_cast<EnumValue>(data);
     qDebug() << enumValue.getLongName();*/
-}
+//}
 
 
 void EnumDelegate::setModelData(QWidget *editor, QAbstractItemModel *model, const QModelIndex &index) const {

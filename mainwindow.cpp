@@ -108,10 +108,13 @@ void MainWindow::openXmlFile(){
         ui->navigation->setModel(model);
         //ui->navigation->setStyleSheet("border: 1px solid white");
 
+
+
         int columns = model->columnCount();
 
         for (int i = 1; i < columns; ++i) {
             ui->navigation->setColumnHidden(i, true);
+            ui->treeView->resizeColumnToContents(i);
         }
         HTMLDelegate* delegate = new HTMLDelegate();
         ui->navigation->setItemDelegateForColumn(0, delegate);
@@ -127,7 +130,7 @@ void MainWindow::openXmlFile(){
  */
 void MainWindow::info(){
     if(parser != NULL){
-        InfoDialog dialog(this, parser->getTitle(), parser->getreqIfSourceTool(), parser->getCreationTime());
+        InfoDialog dialog(this, parser->getTitle(), parser->getreqIfSourceTool(), parser->getCreationTime(), parser->getReqIfTool());
         dialog.exec();
     }
 }

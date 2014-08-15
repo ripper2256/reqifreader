@@ -188,41 +188,41 @@ void DomParser::adjustHeaderSection(){
  */
 void DomParser::parseSpecifications(const QDomNode &element, TreeItem *parent){
     QDomNode child = element.firstChildElement("CHILDREN").firstChild();
-     while (!child.isNull()) {
-         bool tableInternal = false;
-         QVector<QVariant> itemData(specAttributes.size());
-         QVector<QString> ref(specAttributes.size());
+    while (!child.isNull()) {
+        bool tableInternal = false;
+        QVector<QVariant> itemData(specAttributes.size());
+        QVector<QString> ref(specAttributes.size());
 
-         QString specObjectID = child.firstChildElement("OBJECT").firstChild().toElement().text();
-         SpecObject specObject = specObjectList.value(specObjectID);
+        QString specObjectID = child.firstChildElement("OBJECT").firstChild().toElement().text();
+        SpecObject specObject = specObjectList.value(specObjectID);
 
-         if(mergeTextAndChapterName){
+        if(mergeTextAndChapterName){
             specObject.mergeTextAndHeading(textAttribut, headingAttribut);
-         }
+        }
 
-         QHash<QString, int>::iterator i;
-         for (i = specAttributes.begin(); i != specAttributes.end(); ++i){
-             itemData[i.value()] = specObject.getAttributValue2(i.key());
-             ref[i.value()] = i.key();
-         }
+        QHash<QString, int>::iterator i;
+        for (i = specAttributes.begin(); i != specAttributes.end(); ++i){
+            itemData[i.value()] = specObject.getAttributValue2(i.key());
+            ref[i.value()] = i.key();
+        }
 
-         QList<QVariant> itemList;
-         QList<QString> refList;
-         itemList = itemList.fromVector(itemData);
-         refList = refList.fromVector(ref);
+        QList<QVariant> itemList;
+        QList<QString> refList;
+        itemList = itemList.fromVector(itemData);
+        refList = refList.fromVector(ref);
 
-         TreeItem *item = model->setupModelData(specObjectID, itemList, refList, parent);
+        TreeItem *item = model->setupModelData(specObjectID, itemList, refList, parent);
 
-         //stop parsing child nodes, if it is an internal table (e.g. doors table)
-         if(child.toElement().hasAttribute("IS-TABLE-INTERNAL")){
-             if(child.toElement().attribute("IS-TABLE-INTERNAL") == "true")
-                 tableInternal = true;
-         }
+        //stop parsing child nodes, if it is an internal table (e.g. doors table)
+        if(child.toElement().hasAttribute("IS-TABLE-INTERNAL")){
+            if(child.toElement().attribute("IS-TABLE-INTERNAL") == "true")
+                tableInternal = true;
+        }
 
-         if(!tableInternal)
+        if(!tableInternal)
             parseSpecifications(child, item);
-         child = child.nextSibling();
-     }
+        child = child.nextSibling();
+    }
 }
 
 /**

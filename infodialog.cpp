@@ -24,13 +24,14 @@
  * @param sourceTool
  * @param creaTime
  */
-InfoDialog::InfoDialog(QWidget *parent, const QString &title, const QString &sourceTool, const QString &creaTime) : QDialog(parent),
+InfoDialog::InfoDialog(QWidget *parent, const QString &title, const QString &sourceTool, const QString &creaTime, const QString &toolId) : QDialog(parent),
     ui(new Ui::InfoDialog){
 
     ui->setupUi(this);
     ui->lETitle->setText(title);
     ui->lESToolID->setText(sourceTool);
     ui->lECreaTime->setText(creaTime);
+    ui->lERToolID->setText(toolId);
     connect(ui->closeButton, SIGNAL(clicked()), this, SLOT(close()));
 }
 /**
